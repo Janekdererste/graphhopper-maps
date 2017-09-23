@@ -16,6 +16,31 @@ module.exports = {
     publicPath: "/",
     contentBase: distPath
   },
+  resolve: {
+    // Leaflet image Alias resolutions otherwise webpack build is not compatible with leaflet package
+    alias: {
+      "./images/layers.png$": path.resolve(
+        __dirname,
+        "node_modules/leaflet/dist/images/layers.png"
+      ),
+      "./images/layers-2x.png$": path.resolve(
+        __dirname,
+        "node_modules/leaflet/dist/images/layers-2x.png"
+      ),
+      "./images/marker-icon.png$": path.resolve(
+        __dirname,
+        "node_modules/leaflet/dist/images/marker-icon.png"
+      ),
+      "./images/marker-icon-2x.png$": path.resolve(
+        __dirname,
+        "node_modules/leaflet/dist/images/marker-icon-2x.png"
+      ),
+      "./images/marker-shadow.png$": path.resolve(
+        __dirname,
+        "node_modules/leaflet/dist/images/marker-shadow.png"
+      )
+    }
+  },
   module: {
     rules: [
       {
@@ -30,8 +55,21 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader:
-          "style-loader!css-loader?modules&importLoaders=1&localIdentName=[name]__[local]__[hash:base64:5]"
+        use: [
+          { loader: "style-loader" },
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+              modules: true,
+              localIdentName: "[name]__[local]__[hash:base64:5]"
+            }
+          }
+        ]
+      },
+      {
+        test: /\.png/,
+        loader: "file-loader"
       }
     ]
   },
