@@ -20,8 +20,10 @@
     "babel-polyfill": "^6.26.0",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.8.2",
+    "file-loader": "^0.11.2",
     "style-loader": "^0.18.2",
     "css-loader": "^0.28.7",
+    "raw-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1"
   }
 }
