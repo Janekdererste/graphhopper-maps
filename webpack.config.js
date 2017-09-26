@@ -1,6 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const srcPath = path.resolve(__dirname, "src");
 const distPath = path.resolve(__dirname, "dist");
@@ -17,7 +17,9 @@ module.exports = {
     contentBase: distPath
   },
   resolve: {
-    // Leaflet image Alias resolutions otherwise webpack build is not compatible with leaflet package
+    // Leaflet image Alias resolutions
+    // Leaflet uses image references in its css. These aliases
+    // point the relative paths to the images in the node_modules folder
     alias: {
       "./images/layers.png$": path.resolve(
         __dirname,
@@ -67,11 +69,19 @@ module.exports = {
           }
         ]
       },
+      //This loads the png files the leaflet css points to
       {
         test: /\.png/,
         loader: "file-loader"
       }
     ]
   },
-  plugins: [new HtmlWebpackPlugin()]
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: srcPath + "/index.html",
+        to: "index.html"
+      }
+    ])
+  ]
 };
