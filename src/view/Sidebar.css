@@ -1,0 +1,29 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  padding: 1rem;
+}
+
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.searchButton {
+  margin-left: 1rem;
+}
+
+.resultLabel {
+  margin-top: 1rem;
+  word-break: break-all;
+  flex: 1;
+}
+
+.leg {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
