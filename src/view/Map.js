@@ -4,13 +4,16 @@ import React from "react";
 import Leaflet from "leaflet";
 import styles from "./Map.css";
 
-export default () => {
-  return <LeafletComponent />;
+export default ({ paths }) => {
+  return <LeafletComponent paths={paths} />;
 };
 
 class LeafletComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selectedPathIndex: -1
+    };
   }
 
   componentDidMount() {
@@ -39,15 +42,31 @@ class LeafletComponent extends React.Component {
     this.forceRerenderAfterTimeout(leaflet);
   }
 
-  compnentDidUpdate() {
+  componentWillReceiveProps(nextProps) {
+    //needs to determine whether props have changed
+    if (nextProps.paths && nextProps.paths.length > 0) {
+      let firstPath = nextProps.paths[0];
+      let geoJson = this._transformLegsToGeoJson(firstPath.legs);
+      Leaflet.geoJson(geoJson, {
+        style: feature => this._getStyle(feature)
+      }).addTo(this.leaflet);
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
+  }
+
+  componentDidUpdate() {
     console.log("update");
   }
 
   render() {
-    console.log("render");
+    console.log("render: " + this.props.someProp);
     if (this.leafletRoot) console.log(this.leafletRoot.clientHeight);
     return (
       <div className={styles.fill}>
+        {this.props.someProp}
         <div
           style={{ height: "100%" }}
           ref={div => {
@@ -62,5 +81,39 @@ class LeafletComponent extends React.Component {
     setTimeout(() => {
       leaflet.invalidateSize();
     }, 100);
+  }
+
+  _transformLegsToGeoJson(legs) {
+    const features = legs.map(leg => {
+      return {
+        type: "Feature",
+        properties: {
+          type: leg.type
+        },
+        geometry: leg.geometry
+      };
+    });
+    let featureCollection = {
+      type: "FeatureCollection",
+      features: features
+    };
+    return featureCollection;
+  }
+
+  _getStyle(feature) {
+    let style = {
+      weight: 5
+    };
+    switch (feature.properties.type) {
+      case "walk":
+        style.color = "#db4343";
+        break;
+      case "pt":
+        style.color = "#42a7f4";
+        break;
+      default:
+        style.color = "#71db43";
+    }
+    return style;
   }
 }

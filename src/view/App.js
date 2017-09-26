@@ -35,7 +35,7 @@ export default class App extends React.Component {
           />
         </div>
         <div className={styles.map}>
-          <Map className={styles.map} />
+          <Map paths={this.state.paths} />
         </div>
       </div>
     );
