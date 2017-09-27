@@ -1,30 +1,39 @@
-import Http from "./Http.js";
-
 export default class SearchStore {
-  static ENDPOINT() {
-    return "http://dbms-env.eu-central-1.elasticbeanstalk.com";
-  }
   constructor() {
-    this.query = `/route?point=52.5141,13.4963&point=52.516116401541495,13.448467254638674&locale=en-US&vehicle=pt&weighting=fastest&elevation=false&pt.earliest_departure_time=2017-09-26T12%3A50%3A42.020Z&use_miles=false&points_encoded=false&pt.max_walk_distance_per_leg=1000&pt.profile=true&pt.limit_solutions=5`;
-    this.queryResult = "";
+    this.from = [52.5141, 13.4963];
+    this.to = [52.46521370191653, 13.43559265136719];
+    this.weighting = "fastest";
+    this.departureTime = Date.now();
+    this.maxWalkDistance = 1000;
+    this.limitSolutions = 3;
   }
 
-  search(callback, error) {
-    const url = SearchStore.ENDPOINT() + this.query;
-    let self = this;
-    Http.makeGETRequest(
-      url,
-      text => this.parseResult(text, callback, error),
-      error => {
-        error(error);
-      }
-    );
-  }
-
-  parseResult(text, callback, error) {
-    let result = JSON.parse(text);
-    this.paths = result.paths;
-    console.log(result);
-    callback(this.paths);
+  static updateSearch(state, action) {
+    switch (action.type) {
+      case SearchActionType.FROM:
+        return Object.assign({}, state, { from: action.value });
+      case SearchActionType.TO:
+        return Object.assign({}, state, { to: action.value });
+      case SearchActionType.WEIGHTING:
+        return Object.assign({}, state, { weighting: action.value });
+      case SearchActionType.DEPARTURE_TIME:
+        return Object.assign({}, state, { departureTime: action.value });
+      case SearchActionType.MAX_WALK_DISTANCE:
+        return Object.assign({}, state, { maxWalkDistance: action.value });
+      case SearchActionType.LIMIT_SOLUTIONS:
+        return Object.assign({}, state, { limitSolutions: action.value });
+      default:
+        return state;
+    }
   }
 }
+
+const SearchActionType = {
+  FROM: 0,
+  TO: 1,
+  WEIGHTING: 2,
+  DEPARTURE_TIME: 3,
+  MAX_WALK_DISTANCE: 4,
+  LIMIT_SOLUTIONS: 5
+};
+export { SearchActionType };

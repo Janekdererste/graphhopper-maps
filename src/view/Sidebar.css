@@ -5,6 +5,11 @@
   padding: 1rem;
 }
 
+.search {
+  display: flex;
+  flex-direction: column;
+}
+
 .searchBar {
   display: flex;
   flex-direction: row;
