@@ -1,14 +1,18 @@
-export default class SearchStore {
-  constructor() {
-    this.from = [52.5141, 13.4963];
-    this.to = [52.46521370191653, 13.43559265136719];
-    this.weighting = "fastest";
-    this.departureTime = Date.now();
-    this.maxWalkDistance = 1000;
-    this.limitSolutions = 3;
+import Store from "./Store.js";
+
+export default class SearchStore extends Store {
+  getInitialState() {
+    return {
+      from: [52.5141, 13.4963],
+      to: [52.46521370191653, 13.43559265136719],
+      weighting: "fastest",
+      departureTime: new Date(Date.now()).toISOString(),
+      maxWalkDistance: 1000,
+      limitSolutions: 3
+    };
   }
 
-  static updateSearch(state, action) {
+  reduce(state, action) {
     switch (action.type) {
       case SearchActionType.FROM:
         return Object.assign({}, state, { from: action.value });
@@ -29,11 +33,11 @@ export default class SearchStore {
 }
 
 const SearchActionType = {
-  FROM: 0,
-  TO: 1,
-  WEIGHTING: 2,
-  DEPARTURE_TIME: 3,
-  MAX_WALK_DISTANCE: 4,
-  LIMIT_SOLUTIONS: 5
+  FROM: "SearchActionType_FROM",
+  TO: "SearchActionType_TO",
+  WEIGHTING: "SearchActionType_WEIGHTING",
+  DEPARTURE_TIME: "SearchActionType_DEPARTURE_TIME",
+  MAX_WALK_DISTANCE: "SearchActionType_MAX_WALK_DISTANCE",
+  LIMIT_SOLUTIONS: "SearchActionType_LIMIT_SOLUTIONS"
 };
 export { SearchActionType };

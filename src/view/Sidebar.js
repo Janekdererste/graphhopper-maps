@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Sidebar.css";
 import { SearchActionType } from "../data/SearchStore.js";
-import { PathActionType } from "../data/PathStore.js";
+import { PathActionType } from "../data/RouteStore.js";
 
 const PathDisplay = ({ path }) => {
   return (
@@ -51,14 +51,14 @@ const Pt = ({ leg }) => {
   );
 };
 
-const Search = ({ searchStore, onChange, onClick }) => {
+const Search = ({ search, onChange, onClick }) => {
   return (
     <div className={styles.search}>
       <div>
         <label>From: </label>
         <input
           type="text"
-          value={searchStore.from}
+          value={search.from}
           onChange={e =>
             onChange({ type: SearchActionType.FROM, value: e.target.value })}
         />
@@ -67,7 +67,7 @@ const Search = ({ searchStore, onChange, onClick }) => {
         <label>To: </label>
         <input
           type="text"
-          value={searchStore.to}
+          value={search.to}
           onChange={e =>
             onChange({ type: SearchActionType.TO, value: e.target.value })}
         />
@@ -76,7 +76,7 @@ const Search = ({ searchStore, onChange, onClick }) => {
         <label>Time: </label>
         <input
           type="text"
-          value={searchStore.departureTime}
+          value={search.departureTime}
           onChange={e =>
             onChange({
               type: SearchActionType.DEPARTURE_TIME,
@@ -88,7 +88,7 @@ const Search = ({ searchStore, onChange, onClick }) => {
         <label>Walking distance: </label>
         <input
           type="text"
-          value={searchStore.maxWalkDistance}
+          value={search.maxWalkDistance}
           onChange={e =>
             onChange({
               type: SearchActionType.MAX_WALK_DISTANCE,
@@ -103,17 +103,25 @@ const Search = ({ searchStore, onChange, onClick }) => {
   );
 };
 
-export default ({ pathStore, searchStore, onSearchChange, onSearchClick }) => {
+export default ({ routes, search, onSearchChange, onSearchClick }) => {
   return (
     <div className={styles.sidebar}>
       <Search
-        searchStore={searchStore}
+        search={search}
         onChange={onSearchChange}
         onClick={onSearchClick}
       />
-      <p>{pathStore.isFetching ? "loading..." : "not loading!"}</p>
-
-      {pathStore.paths ? <PathDisplay path={pathStore.paths[0]} /> : ""}
+      <p>{getStatusText(routes)}</p>
+      {routes.paths ? <PathDisplay path={routes.paths[0]} /> : ""}
     </div>
   );
 };
+
+function getStatusText(routes) {
+  if (routes.isFetching) {
+    return "loading...";
+  }
+  if (!routes.isLastQuerySuccess) {
+    return "error during last request";
+  }
+}

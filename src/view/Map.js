@@ -3,8 +3,8 @@ import React from "react";
 import Leaflet from "leaflet";
 import styles from "./Map.css";
 
-export default ({ pathStore }) => {
-  return <LeafletComponent pathStore={pathStore} />;
+export default ({ routes }) => {
+  return <LeafletComponent routes={routes} />;
 };
 
 class LeafletComponent extends React.Component {
@@ -44,11 +44,11 @@ class LeafletComponent extends React.Component {
   componentWillReceiveProps(nextProps) {
     //needs to determine whether props have changed
     if (
-      nextProps.pathStore &&
-      nextProps.pathStore.paths &&
-      nextProps.pathStore.paths.length > 0
+      nextProps.routes &&
+      nextProps.routes.paths &&
+      nextProps.routes.paths.length > 0
     ) {
-      let firstPath = nextProps.pathStore.paths[0];
+      let firstPath = nextProps.routes.paths[0];
       let geoJson = this._transformLegsToGeoJson(firstPath.legs);
       Leaflet.geoJson(geoJson, {
         style: feature => this._getStyle(feature)
