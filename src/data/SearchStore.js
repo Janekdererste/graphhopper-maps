@@ -17,9 +17,13 @@ export default class SearchStore extends Store {
   reduce(state, action) {
     switch (action.type) {
       case SearchActionType.FROM:
-        return Object.assign({}, state, { from: action.value });
+        return Object.assign({}, state, {
+          from: this._transformToPoint(action.value)
+        });
       case SearchActionType.TO:
-        return Object.assign({}, state, { to: action.value });
+        return Object.assign({}, state, {
+          to: this._transformToPoint(action.value)
+        });
       case SearchActionType.WEIGHTING:
         return Object.assign({}, state, { weighting: action.value });
       case SearchActionType.DEPARTURE_TIME:
@@ -36,6 +40,14 @@ export default class SearchStore extends Store {
       default:
         return state;
     }
+  }
+
+  _transformToPoint(inputString) {
+    let splitInput = inputString.split(",");
+    let result = splitInput.map(value => {
+      return Number.parseFloat(value);
+    });
+    return result;
   }
 }
 
