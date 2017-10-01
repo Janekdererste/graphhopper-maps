@@ -15,7 +15,7 @@ export default class App extends React.Component {
     this.searchStore.registerChangeHandler(() =>
       this.handleSearchStoreChanged()
     );
-    this.routeStore = new PathStore(Dispatcher, this.searchStore.getState());
+    this.routeStore = new PathStore(Dispatcher, this.searchStore);
     this.routeStore.registerChangeHandler(() => this.handleRouteStoreChanged());
 
     this.state = {

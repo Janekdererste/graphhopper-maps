@@ -1,0 +1,42 @@
+.searchInput {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchInput input {
+  min-height: 1.5rem;
+  padding: 0.2rem 1rem;
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+.locationInput {
+  display: flex;
+  flex-direction: column;
+}
+
+.locationInputField {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeSelect {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.timeSelect select {
+  min-height: 2rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 2px;
+  border: 1px solid black;
+  margin-right: 0.5rem;
+}
+
+.timeInput {
+  flex: 1;
+  margin-bottom: 0.5rem;
+}
