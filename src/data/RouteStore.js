@@ -1,11 +1,11 @@
 import DataManager, { DataManagerActionType } from "./DataManager.js";
 import Store from "./Store.js";
-import { SearchActionType } from "./SearchStore.js";
+import SearchStore, { TimeOption, SearchActionType } from "./SearchStore.js";
 
 export default class RouteStore extends Store {
-  constructor(dispatcher, searchState) {
+  constructor(dispatcher, searchStore) {
     super(dispatcher);
-    this._state.searchState = searchState;
+    this.searchStore = searchStore;
   }
 
   getInitialState() {
@@ -17,26 +17,21 @@ export default class RouteStore extends Store {
 
   reduce(state, action) {
     switch (action.type) {
-      case RouteActionType.REQUEST_PATH:
-        DataManager.queryRoute(this.createQuery());
-        return Object.assign({}, state, { isFetching: true });
       case RouteActionType.RECEIVE_PATH:
         return Object.assign({}, state, {
           isFetching: false,
           paths: action.value
         });
       case SearchActionType.FROM:
-        return this._updateSearch(state, "from", action.value);
       case SearchActionType.TO:
-        return this._updateSearch(state, "to", action.value);
       case SearchActionType.WEIGHTING:
-        return this._updateSearch(state, "weighting", action.value);
       case SearchActionType.DEPARTURE_TIME:
-        return this._updateSearch(state, "departureTime", action.value);
       case SearchActionType.MAX_WALK_DISTANCE:
-        return this._updateSearch(state, "maxWalkDistance", action.value);
       case SearchActionType.LIMIT_SOLUTIONS:
-        return this._updateSearch(state, "limitSolutions", action.value);
+      case SearchActionType.TIME_OPTION:
+      case RouteActionType.REQUEST_PATH:
+        DataManager.queryRoute(this.createQuery());
+        return Object.assign({}, state, { isFetching: true });
       case DataManagerActionType.RECEIVED_ROUTE:
         const paths = this.parseResult(action.value);
         return Object.assign({}, state, {
@@ -61,28 +56,39 @@ export default class RouteStore extends Store {
   }
 
   createQuery() {
-    const state = this.getState();
+    const search = this.searchStore.getState();
     return (
       "/route?point=" +
-      state.searchState.from[0] +
+      search.from[0] +
       "," +
-      state.searchState.from[1] +
+      search.from[1] +
       "&point=" +
-      state.searchState.to +
+      search.to +
       "&locale=en-US&vehicle=pt&weighting=" +
-      state.searchState.weighting +
+      search.weighting +
       "&elevation=false&pt.earliest_departure_time=" +
-      state.searchState.departureTime +
+      search.departureTime +
       "&use_miles=false&points_encoded=false&pt.max_walk_distance_per_leg=" +
-      state.searchState.maxWalinkDistance +
+      search.maxWalkDistance +
       "&pt.profile=true&pt.limit_solutions=" +
-      state.searchState.limitSolutions
+      search.limitSolutions
     );
   }
 
   parseResult(text, callback, error) {
     let result = JSON.parse(text);
     return result.paths;
+  }
+
+  createTimeParameter(search) {
+    let query = "&pt.";
+    if (search.timeOption == TimeOption.NOW) {
+      query = +"arrive_by=" + new Date(Date.now()).toISOString();
+    } else if (search.timeOption == TimeOption.DEPARTURE) {
+      query += "earliest_departure_time=" + search.time;
+    } else {
+      query = +"earliest_departure_time=" + new Date(Date.now()).toISOString();
+    }
   }
 }
 
