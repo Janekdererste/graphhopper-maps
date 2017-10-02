@@ -3,12 +3,12 @@ import Store from "./Store.js";
 export default class SearchStore extends Store {
   getInitialState() {
     return {
-      from: [52.5141, 13.4963],
-      to: [52.46521370191653, 13.43559265136719],
+      from: [52.60137941045536,13.51249694824219],
+      to: [52.41121553671389,13.354568481445314],
       departureTime: new Date(Date.now()),
       weighting: "fastest",
       maxWalkDistance: 1000,
-      limitSolutions: 3,
+      limitSolutions: 2,
       timeOption: TimeOption.NOW,
       isShowingOptions: false
     };
@@ -44,11 +44,14 @@ export default class SearchStore extends Store {
     }
   }
 
-  _transformToPoint(inputString) {
-    let splitInput = inputString.split(",");
-    let result = splitInput.map(value => {
-      return Number.parseFloat(value);
-    });
+  _transformToPoint(input) {
+    let result = input;
+    if (typeof input === "string") {
+      let splitInput = input.split(",");
+      result = splitInput.map(value => {
+        return Number.parseFloat(value);
+      });
+    }
     return result;
   }
 }

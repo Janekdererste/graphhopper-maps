@@ -2,8 +2,8 @@ import React from "react";
 import styles from "./Sidebar.css";
 import SearchInput from "./SearchInput.js";
 import RouteResultDisplay from "./RouteResultDisplay.js";
-import { SearchActionType, TimeOption } from "../data/SearchStore.js";
-import { PathActionType } from "../data/RouteStore.js";
+import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
+import { PathActionType } from "../../data/RouteStore.js";
 
 export default ({ routes, search, onSearchChange, onSearchClick }) => {
   return (

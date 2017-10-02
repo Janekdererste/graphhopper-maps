@@ -12,7 +12,8 @@ export default class RouteStore extends Store {
   getInitialState() {
     return {
       isFetching: false,
-      isLastQuerySuccess: true
+      isLastQuerySuccess: true,
+      selectedRouteIndex: 0,
     };
   }
 

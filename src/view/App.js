@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "./Sidebar.js";
-import Map from "./Map.js";
+import Sidebar from "./sidebar/Sidebar.js";
+import Map from "./map/Map.js";
 import PathStore, { RouteActionType } from "../data/RouteStore.js";
 import SearchStore from "../data/SearchStore.js";
 import Dispatcher from "../data/Dispatcher.js";
@@ -22,6 +22,10 @@ export default class App extends React.Component {
       search: this.searchStore.getState(),
       routes: this.routeStore.getState()
     };
+  }
+
+  componentDidMount() {
+    Dispatcher.dispatch({ type: RouteActionType.REQUEST_PATH });
   }
 
   handleSearchStoreChanged() {
@@ -52,7 +56,7 @@ export default class App extends React.Component {
           />
         </div>
         <div className={styles.map}>
-          <Map routes={this.state.routes} />
+          <Map routes={this.state.routes} search={this.state.search} />
         </div>
       </div>
     );

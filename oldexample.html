@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+  ~  Licensed to GraphHopper GmbH under one or more contributor
+  ~  license agreements. See the NOTICE file distributed with this work for
+  ~  additional information regarding copyright ownership.
+  ~
+  ~  GraphHopper GmbH licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except in
+  ~  compliance with the License. You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GraphHopper Directions</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+</head>
+<body>
+<script>
+    var Map = {
+        view: function(vnode) {
+            var model = vnode.attrs.model;
+            var addLayersToResponseLayer = function() {
+                if (model.response != null) {
+                    model.response.paths.forEach(function(path, pathindex) {
+                        var pathlayer = L.featureGroup();
+                        path.legs.forEach(function(leg, index) {
+                            var linerun = L.geoJson(leg.geometry);
+                            if (leg.type === "pt") {
+                                var departurestop = L.geoJson(leg.stops[0].geometry, {pointToLayer: function(feature, latLng) {
+                                    return L.circleMarker(latLng, {radius: 5});
+                                }});
+                                if (pathindex == state.checkedPath) {
+                                    departurestop.setStyle({color: "#00cc33", "weight": 6, "opacity": 1});
+                                    linerun.setStyle({color: "#00cc33", "weight": 6, "opacity": 1});
+                                } else {
+                                    departurestop.setStyle({color: "darkgray", "weight": 6, "opacity": 0.6});
+                                    linerun.setStyle({color: "darkgray", "weight": 6, "opacity": 0.6});
+                                }
+                                departurestop.addTo(pathlayer);
+                            } else {
+                                if (pathindex == state.checkedPath) {
+                                    linerun.setStyle({color: "lightblue", "weight": 6, "opacity": 1});
+                                } else {
+                                    linerun.setStyle({color: "darkgray", "weight": 6, "opacity": 0.6});
+                                }
+                            }
+                            linerun.addTo(pathlayer);
+                        });
+                        pathlayer.addTo(Map.view.responseLayer);
+                    });
+                    Map.view.responseLayer.getLayers()[state.checkedPath].bringToFront();
+                }
+            };
+            return m("div", {
+                style: "height:800px",
+                oncreate: function(vnode) {
+                    Map.view.mymap = L.map(vnode.dom);
+                    L.tileLayer('http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png', {
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                        maxZoom: 18
+                    }).addTo(Map.view.mymap);
+                    var origin = L.marker(state.origin,{draggable: true});
+                    origin.on('dragend', function() {
+                        state.origin = origin.getLatLng();
+                        state.reRoute();
+                    });
+                    var destination = L.marker(state.destination,{draggable: true});
+                    destination.on('dragend', function() {
+                        state.destination = destination.getLatLng();
+                        state.reRoute();
+                    });
+                    var inputPoints = L.featureGroup([origin, destination]);
+                    inputPoints.addTo(Map.view.mymap);
+                    Map.view.responseLayer = L.featureGroup().addTo(Map.view.mymap);
+                    Map.view.mymap.fitBounds(inputPoints.getBounds());
+                    addLayersToResponseLayer();
+                },
+                onupdate: function(vnode) {
+                    Map.view.responseLayer.clearLayers();
+                    addLayersToResponseLayer();
+                }
+            });
+        }
+    };
+    var state = {
+        init: function(vnode) {
+            state.origin = L.latLng(vnode.attrs.origin.split(','))
+            state.destination = L.latLng(vnode.attrs.destination.split(','))
+            state.time = moment(vnode.attrs.time)
+            state.checkedPath = 0
+            state.departArrive = vnode.attrs.arriveBy ? "arrive" : "depart"
+            state.max_walk_distance_per_leg = vnode.attrs.max_walk_distance_per_leg
+        },
+        doRequest: function() {
+            const request = {method: "GET", url:
+            "/route?point="+state.origin.lat+","+state.origin.lng
+             + "&point="+state.destination.lat+","+state.destination.lng
+            + "&locale=en-US&vehicle=pt&weighting=fastest&elevation=false"
+            + "&pt.earliest_departure_time=" + encodeURIComponent(state.time.toISOString())
+            + (state.departArrive === "arrive" ? "&pt.arrive_by=true" : "")
+            + "&use_miles=false&points_encoded=false"
+            + "&pt.max_walk_distance_per_leg="+state.max_walk_distance_per_leg
+            + "&pt.profile=true&pt.limit_solutions=5"
+            };
+            console.log(request.url);
+            return m.request(request)
+                    .then(function (result) {
+                        console.log(JSON.stringify(result));
+                        state.response = result;
+                    });
+        },
+        reRoute: function() {
+            m.route.set(encodeURI("/route?time="+moment(state.time).toISOString()
+                + "&origin="+state.origin.lat+","+state.origin.lng+"&destination="+state.destination.lat+","+state.destination.lng
+                + "&max_walk_distance_per_leg="+state.max_walk_distance_per_leg
+                + (state.departArrive === "arrive" ? "&arriveBy=true" : "")));
+        }
+    };
+    var RoutePlanner = {
+        oninit: function(vnode) {
+            state.init(vnode);
+            state.doRequest();
+        },
+        view: function(vnode) {
+            return m("html", [
+                m("body", [
+                    m("div", {style: "float:left;width:30%"}, [
+                        m("div", [
+                            m("div", [
+                                m("input", {id: "origin", onchange: m.withAttr("value", function(string) {
+                                    state.origin = L.latLng(string.split(','))
+                                }), value: state.origin.lat + ',' + state.origin.lng}),
+                                m("label", {"for": "origin"}, "origin"),
+                            ]),
+                            m("div", [
+                                m("input", {id: "destination", onchange: m.withAttr("value", function(string) {
+                                    state.destination = L.latLng(string.split(','))
+                                }), value: state.destination.lat + ',' + state.destination.lng}),
+                                m("label", {"for": "destination"}, "destination"),
+                            ]),
+                            m("div", [
+                                m("input", {id: "time", type: "datetime-local", onchange: m.withAttr("value", function(string) {
+                                    state.time = moment(string).toISOString();
+                                }), value: moment(state.time).format("YYYY-MM-DDTHH:mm")}),
+                                m("label", {"for": "time"}, [
+                                    m("input", {id: "depart", type: "radio", name: "depart-arrive", checked: "depart" === state.departArrive, onclick: function() {
+                                        state.departArrive = "depart";
+                                    }}),
+                                    m("label", {"for": "depart"}, "departure time"),
+                                    m("input", {id: "arrive", type: "radio", name: "depart-arrive", checked: "arrive" === state.departArrive, onclick: function() {
+                                        state.departArrive = "arrive";
+                                    }}),
+                                    m("label", {"for": "arrive"}, "arrival time")
+                                ]),
+                            ]),
+                            m("div", [
+                                m("input", {id: "maxWalkDistance", onchange: m.withAttr("value", function(maxWalkDistance) {
+                                    state.max_walk_distance_per_leg = maxWalkDistance;
+                                }), value: state.max_walk_distance_per_leg}),
+                                m("label", {"for": "maxWalkDistance"}, "maximum walking distance per leg"),
+                            ]),
+                        ]),
+                        m("button", {onclick:  state.reRoute}, "Get route"),
+                        state.response ? [
+                            m("div", [
+                                state.response.paths.map(function(path, index) {
+                                    return [
+                                        m("input", {id: "path-"+index, type: "radio", name: "path-tabs", checked: index === state.checkedPath, onclick: function() {
+                                            state.checkedPath = index;
+                                        }}),
+                                        m("label", {"for": "path-"+index}, index+1)
+                                    ];
+                                })
+                            ]),
+                            m("ol", [
+                                state.response.paths[state.checkedPath].legs.map(function(leg, index) {
+                                    return m("li", [
+                                        m("div", leg.departureLocation),
+                                        m("div", leg.distance),
+                                        m("div", leg.departureTime),
+                                        leg.type === "pt" ? [m("div", leg.route_id), m("div", leg.trip_headsign)] : [],
+                                        leg.type === "walk" ? m("ol", leg.instructions.map(function(instruction, index) {
+                                            return m("li", [m("div", instruction.text), m("div", instruction.time > 0 ? moment.duration(instruction.time).humanize() : [])]);
+                                        })) : [],
+                                        leg.type === "pt" ? m("ol", leg.stops.map(function(stop, index) {
+                                            return m("li", m("div", m("div", stop.arrivalTime), m("div", stop.stop_id), m("div", stop.stop_name), m("div", stop.departureTime)));
+                                        })) : [],
+                                        m("div", leg.arrivalTime)
+                                    ])
+                                })
+                            ])]: []
+                    ]), state.response ? m(Map, {model: state}) : []
+                ])
+            ]);
+        }
+    };
+    m.route(document.body, "/route?time="+moment(new Date()).toISOString()+"&origin=52.5141,13.4963&destination=52.5137,13.4355&max_walk_distance_per_leg=1000", {
+        "/route": {onmatch: function() {return RoutePlanner}, render: function(vnode) {
+            vnode.key = vnode.attrs;
+            return vnode
+        }}
+    });
+</script>
+</body>
+</html>

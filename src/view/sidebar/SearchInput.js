@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchActionType, TimeOption } from "../data/SearchStore.js";
+import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
 import styles from "./SearchInput.css";
 
 export default ({ search, onSearchChange }) => {
