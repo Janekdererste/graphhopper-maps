@@ -10,7 +10,7 @@ export default ({ routes, search, onSearchChange, onSearchClick }) => {
     <div className={styles.sidebar}>
       <SearchInput search={search} onSearchChange={onSearchChange} />
       <p>{getStatusText(routes)}</p>
-      {routes.paths ? <RouteResultDisplay path={routes.paths[0]} /> : ""}
+      {routes.paths ? <RouteResultDisplay routes={routes} /> : ""}
     </div>
   );
 };

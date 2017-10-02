@@ -1,5 +1,36 @@
 .leg {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin-top: 1rem;
+  justify-content: space-between;
+  border-bottom: 1px solid gray;
+}
+
+.legInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.tripInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.routeResultDisplay > * {
+  border-top: 1px solid black;
+}
+
+.route {
+  padding: 1rem;
+  transition-duration: 0.2s;
+}
+
+.route:hover {
+  background-color: lightgray;
+}
+
+.timeContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

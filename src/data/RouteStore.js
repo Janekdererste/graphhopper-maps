@@ -13,7 +13,7 @@ export default class RouteStore extends Store {
     return {
       isFetching: false,
       isLastQuerySuccess: true,
-      selectedRouteIndex: 0,
+      selectedRouteIndex: 0
     };
   }
 
@@ -24,6 +24,8 @@ export default class RouteStore extends Store {
           isFetching: false,
           paths: action.value
         });
+      case RouteActionType.SELECTED_ROUTE_INDEX:
+        return Object.assign({}, state, { selectedRouteIndex: action.value });
       case SearchActionType.FROM:
       case SearchActionType.TO:
       case SearchActionType.WEIGHTING:
@@ -36,6 +38,7 @@ export default class RouteStore extends Store {
         return Object.assign({}, state, { isFetching: true });
       case DataManagerActionType.RECEIVED_ROUTE:
         const paths = this.parseResult(action.value);
+        console.log(paths);
         return Object.assign({}, state, {
           paths: paths,
           isLastQuerySuccess: true,
@@ -59,5 +62,6 @@ export default class RouteStore extends Store {
 
 export const RouteActionType = {
   REQUEST_PATH: "RouteActionType_REQUEST_PATH",
-  RECEIVE_PATH: "RouteActionType_RECEIVE_PATH"
+  RECEIVE_PATH: "RouteActionType_RECEIVE_PATH",
+  SELECTED_ROUTE_INDEX: "RouteActionType_SELECTED_ROUTE_INDEX"
 };
