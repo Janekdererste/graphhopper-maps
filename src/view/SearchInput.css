@@ -5,7 +5,7 @@
 
 .searchInput input {
   min-height: 1.5rem;
-  padding: 0.2rem 1rem;
+  padding: 0.2rem 0.4rem;
   border: 1px solid black;
   border-radius: 2px;
 }
@@ -30,7 +30,7 @@
 
 .timeSelect select {
   min-height: 2rem;
-  padding: 0.2rem 0.8rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 2px;
   border: 1px solid black;
   margin-right: 0.5rem;
@@ -39,4 +39,21 @@
 .timeInput {
   flex: 1;
   margin-bottom: 0.5rem;
+}
+
+.optionsButton {
+  border: 1px solid black;
+  border-radius: 2px;
+  background-color: transparent;
+  min-height: 1.8rem;
+  margin: 0.9rem 0 0.5rem 0;
+  transition-duration: 0.2s;
+}
+
+.optionsButton:hover {
+  background-color: #98cbed;
+}
+
+.optionsButton:active {
+  background-color: #98cbed;
 }

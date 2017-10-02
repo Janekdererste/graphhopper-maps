@@ -6,6 +6,7 @@ const endpoint = "http://dbms-env.eu-central-1.elasticbeanstalk.com";
 export default {
   queryRoute(query) {
     const url = endpoint + query.query;
+    console.log(query.query);
     Http.makeGETRequest(
       url,
       text => {

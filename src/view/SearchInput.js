@@ -15,24 +15,18 @@ export default ({ search, onSearchChange }) => {
 const LocationInput = ({ search, onChange }) => {
   return (
     <div className={styles.locationInput}>
-      <div className={styles.locationInputField}>
-        <label>From</label>
-        <input
-          type="text"
-          value={search.from}
-          onChange={e =>
-            onChange({ type: SearchActionType.FROM, value: e.target.value })}
-        />
-      </div>
-      <div className={styles.locationInputField}>
-        <label>To</label>
-        <input
-          type="text"
-          value={search.to}
-          onChange={e =>
-            onChange({ type: SearchActionType.TO, value: e.target.value })}
-        />
-      </div>
+      <TextInput
+        value={search.from}
+        label="From"
+        actionType={SearchActionType.FROM}
+        onChange={onChange}
+      />
+      <TextInput
+        value={search.to}
+        label="To"
+        actionType={SearchActionType.TO}
+        onChange={onChange}
+      />
     </div>
   );
 };
@@ -66,19 +60,71 @@ const TimeSelect = ({ onChange, search }) => {
 
 const TimeInput = ({ onChange, search }) => {
   return (
-    <input
-      type="text"
-      className={styles.timeInput}
-      value={search.time}
-      onChange={e =>
-        onChange({
-          type: SearchActionType.DEPARTURE_TIME,
-          value: e.target.value
-        })}
-    />
+    <div>
+      <input
+        className={styles.timeInput}
+        type="datetime-local"
+        value={search.departureTime.toISOString().substring(0, 16)}
+        onChange={e =>
+          onChange({
+            type: SearchActionType.DEPARTURE_TIME,
+            value: new Date(e.target.value)
+          })}
+      />
+    </div>
   );
 };
 
 const Options = ({ search, onChange }) => {
-  return null;
+  return (
+    <div>
+      <button
+        className={styles.optionsButton}
+        onClick={e =>
+          onChange({
+            type: SearchActionType.IS_SHOWING_OPTIONS,
+            value: !search.isShowingOptions
+          })}
+      >
+        Options
+      </button>
+      {search.isShowingOptions ? (
+        <div>
+          <TextInput
+            value={search.weighting}
+            label="Weighting"
+            actionType={SearchActionType.WEIGHTING}
+            onChange={onChange}
+          />
+          <TextInput
+            value={search.maxWalkDistance}
+            label="Max. Walking Distance"
+            actionType={SearchActionType.MAX_WALK_DISTANCE}
+            onChange={onChange}
+          />
+          <TextInput
+            value={search.limitSolutions}
+            label="# Alternatives"
+            actionType={SearchActionType.LIMIT_SOLUTIONS}
+            onChange={onChange}
+          />
+        </div>
+      ) : (
+        ""
+      )}
+    </div>
+  );
+};
+
+const TextInput = ({ value, label, actionType, onChange }) => {
+  return (
+    <div className={styles.locationInputField}>
+      <label>{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange({ type: actionType, value: e.target.value })}
+      />
+    </div>
+  );
 };

@@ -34,7 +34,7 @@ export default class Query {
     if (search.timeOption == TimeOption.NOW) {
       result += new Date(Date.now()).toISOString();
     } else {
-      result += search.time;
+      result += search.departureTime.toISOString();
       if (search.timeOption == TimeOption.ARRIVAL) {
         result += "&arrive_by=true";
       }
@@ -51,6 +51,6 @@ export default class Query {
   }
 
   _staticProperties() {
-    return "locale=en-US&vehicle=pt&elevation=false&use_mile=false&points_encoded=false&pt.profile=true";
+    return "locale=en-US&vehicle=pt&elevation=false&use_miles=false&points_encoded=false&pt.profile=true";
   }
 }

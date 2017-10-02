@@ -5,12 +5,12 @@ export default class SearchStore extends Store {
     return {
       from: [52.5141, 13.4963],
       to: [52.46521370191653, 13.43559265136719],
-      time: new Date(Date.now()).toISOString(),
-      time: 0,
+      departureTime: new Date(Date.now()),
       weighting: "fastest",
       maxWalkDistance: 1000,
       limitSolutions: 3,
-      timeOption: TimeOption.NOW
+      timeOption: TimeOption.NOW,
+      isShowingOptions: false
     };
   }
 
@@ -35,8 +35,10 @@ export default class SearchStore extends Store {
       case SearchActionType.TIME_OPTION:
         return Object.assign({}, state, {
           timeOption: action.value,
-          time: new Date(Date.now()).toISOString()
+          departureTime: new Date(Date.now())
         });
+      case SearchActionType.IS_SHOWING_OPTIONS:
+        return Object.assign({}, state, { isShowingOptions: action.value });
       default:
         return state;
     }
@@ -58,7 +60,8 @@ const SearchActionType = {
   DEPARTURE_TIME: "SearchActionType_DEPARTURE_TIME",
   MAX_WALK_DISTANCE: "SearchActionType_MAX_WALK_DISTANCE",
   LIMIT_SOLUTIONS: "SearchActionType_LIMIT_SOLUTIONS",
-  TIME_OPTION: "SearchActionType_TIME_OPTION"
+  TIME_OPTION: "SearchActionType_TIME_OPTION",
+  IS_SHOWING_OPTIONS: "SearchActionType_IS_SHOWING_OPTIONS"
 };
 
 const TimeOption = {
