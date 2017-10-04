@@ -3,12 +3,12 @@ import Store from "./Store.js";
 export default class SearchStore extends Store {
   getInitialState() {
     return {
-      from: [52.60137941045536,13.51249694824219],
-      to: [52.41121553671389,13.354568481445314],
+      from: [52.60137941045536, 13.51249694824219],
+      to: [52.41121553671389, 13.354568481445314],
       departureTime: new Date(Date.now()),
       weighting: "fastest",
       maxWalkDistance: 1000,
-      limitSolutions: 2,
+      limitSolutions: 5,
       timeOption: TimeOption.NOW,
       isShowingOptions: false
     };

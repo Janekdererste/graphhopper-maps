@@ -35,7 +35,10 @@ export default class RouteStore extends Store {
       case SearchActionType.TIME_OPTION:
       case RouteActionType.REQUEST_PATH:
         DataManager.queryRoute(new Query(this.searchStore.getState()));
-        return Object.assign({}, state, { isFetching: true });
+        return Object.assign({}, state, {
+          isFetching: true,
+          selectedRouteIndex: 0
+        });
       case DataManagerActionType.RECEIVED_ROUTE:
         const paths = this.parseResult(action.value);
         console.log(paths);
