@@ -2,17 +2,17 @@ import React from "react";
 import Moment from "moment";
 import Dispatcher from "../../data/Dispatcher.js";
 import { RouteActionType } from "../../data/RouteStore.js";
-import styles from "./RouteResultDisplay.css";
+import styles from "./TripDisplay.css";
 
-export default ({ routes }) => {
+export default ({ trips }) => {
   return (
-    <div className={styles.routeResultDisplay}>
-      {routes.paths.map((path, i) => {
+    <div className={styles.tripDisplay}>
+      {trips.paths.map((trip, i) => {
         return (
-          <Route
+          <Trip
             key={i}
-            path={path}
-            selectedIndex={routes.selectedRouteIndex}
+            trip={trip}
+            selectedIndex={trips.selectedRouteIndex}
             index={i}
           />
         );
@@ -21,52 +21,70 @@ export default ({ routes }) => {
   );
 };
 
-const Route = ({ path, selectedIndex, index }) => {
-  const departureTime = Moment(path.legs[0].departureTime);
-  const arrivalTime = Moment(path.legs[path.legs.length - 1].arrivalTime);
+const Trip = ({ trip, selectedIndex, index }) => {
+  return (
+    <div>
+      {selectedIndex === index ? (
+        <div>
+          <TripHeader trip={trip} />
+          <TripDetails trip={trip} />
+        </div>
+      ) : (
+        <button
+          className={styles.tripToggle}
+          onClick={e =>
+            Dispatcher.dispatch({
+              type: RouteActionType.SELECTED_ROUTE_INDEX,
+              value: index
+            })}
+        >
+          <TripHeader trip={trip} />
+        </button>
+      )}
+    </div>
+  );
+};
 
-  function getTimeLabel() {
+const TripHeader = ({ trip }) => {
+  function getTimeLabel(legs) {
+    const departureTime = Moment(legs[0].departureTime);
+    const arrivalTime = Moment(legs[trip.legs.length - 1].arrivalTime);
+
     let depLabel = departureTime.format("HH:mm");
     let arrLabel = arrivalTime.format("HH:mm");
     return depLabel + " -- " + arrLabel;
   }
 
-  function getDuration() {
+  function getDuration(legs) {
+    const departureTime = Moment(legs[0].departureTime);
+    const arrivalTime = Moment(legs[trip.legs.length - 1].arrivalTime);
     return arrivalTime.diff(departureTime, "minutes");
   }
 
   return (
-    <div
-      className={styles.route}
-      onClick={e =>
-        Dispatcher.dispatch({
-          type: RouteActionType.SELECTED_ROUTE_INDEX,
-          value: index
-        })}
-    >
-      <div className={styles.routeTimeContainer}>
-        <label>{getTimeLabel()}</label>
-        <label>{getDuration()} min</label>
+    <div className={styles.tripHeader}>
+      <div className={styles.tripTime}>
+        <span>{getTimeLabel(trip.legs)}</span>
+        <span>{getDuration(trip.legs)} min</span>
       </div>
-      <label>Transfers {path.transfers}</label>
-      {selectedIndex === index ? <RouteDetails path={path} /> : ""}
+      <span>Transfers {trip.transfers}</span>
     </div>
   );
 };
 
-const RouteDetails = ({ path }) => {
+const TripDetails = ({ trip }) => {
   return (
-    <div className={styles.routeDetails}>
-      {path.legs.map((leg, i) => {
+    <div className={styles.tripDetails}>
+      {trip.legs.map((leg, i) => {
         switch (leg.type) {
           case "walk":
             return (
-              <Walk key={i} leg={leg} isLastLeg={i === path.legs.length - 1} />
+              <Walk key={i} leg={leg} isLastLeg={i === trip.legs.length - 1} />
             );
           case "pt":
             return <Pt key={i} leg={leg} />;
           default:
-            return <label>Implement leg type: {leg.type}</label>;
+            return <span>Implement leg type: {leg.type}</span>;
         }
       })}
     </div>

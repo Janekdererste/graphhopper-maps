@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Sidebar.css";
 import SearchInput from "./SearchInput.js";
-import RouteResultDisplay from "./RouteResultDisplay.js";
+import TripDisplay from "./TripDisplay.js";
 import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
 import { PathActionType } from "../../data/RouteStore.js";
 
@@ -10,7 +10,7 @@ export default ({ routes, search, onSearchChange, onSearchClick }) => {
     <div className={styles.sidebar}>
       <SearchInput search={search} onSearchChange={onSearchChange} />
       <p>{getStatusText(routes)}</p>
-      {routes.paths ? <RouteResultDisplay routes={routes} /> : ""}
+      {routes.paths ? <TripDisplay trips={routes} /> : ""}
     </div>
   );
 };

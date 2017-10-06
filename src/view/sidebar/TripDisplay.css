@@ -1,31 +1,41 @@
-.leg {
-  display: flex;
-  flex-direction: column;
-}
-
-.routeResultDisplay {
+.tripDisplay {
   overflow-y: auto;
   flex: 1;
 }
 
-.routeResultDisplay > * {
+.tripDisplay > * {
   border-top: 1px solid #e6e6e6;
 }
 
-.route {
-  padding: 1rem;
+.tripToggle {
+  background-color: transparent;
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: inherit;
+  font-size: inherit;
   transition-duration: 0.2s;
 }
 
-.route:hover {
+.tripToggle:hover {
   background-color: #e6e6e6;
 }
 
-.routeDetails {
-  margin-top: 1rem;
+.tripToggle:active {
+  background-color: #e6e6e6;
 }
 
-.routeTimeContainer {
+.tripHeader {
+  margin: 1rem;
+}
+
+.tripDetails {
+  margin: 1rem;
+}
+
+.tripTime {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -59,7 +69,7 @@
   background-color: white;
   border: 2px solid black;
   height: 8px;
-  width: 100%;
+  width: 8px;
   top: 7px;
   position: relative;
 }
