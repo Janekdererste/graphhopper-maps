@@ -2,6 +2,7 @@ import React from "react";
 import LeafletAdapter from "./LeafletAdapter.js";
 import styles from "./Map.css";
 import { SearchActionType } from "../../data/SearchStore.js";
+import fromIcon from "./circle.png";
 
 export default ({ routes, search }) => {
   return <LeafletComponent routes={routes} search={search} />;
@@ -25,7 +26,8 @@ class LeafletComponent extends React.Component {
       this.leaflet.setMarkers([
         {
           actionType: SearchActionType.FROM,
-          coords: search.from
+          coords: search.from,
+          icon: fromIcon
         },
         {
           actionType: SearchActionType.TO,

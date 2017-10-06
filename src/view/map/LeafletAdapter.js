@@ -47,21 +47,35 @@ export default class LeafletAdapter {
 
   setMarkers(locations) {
     this._markers.forEach(marker => {
+      marker.off();
       marker.remove();
     });
     this._markers = [];
 
     locations.forEach(location => {
-      let marker = Leaflet.marker(location.coords, { draggable: true });
+      let marker = Leaflet.marker(location.coords, {
+        draggable: true
+      });
       marker.on("dragend", e => {
         Dispatcher.dispatch({
           type: location.actionType,
           value: [e.target._latlng.lat, e.target._latlng.lng]
         });
       });
+
+      if (location.icon) {
+        let icon = Leaflet.icon({
+          iconUrl: location.icon,
+          iconAnchor: [10, 10],
+          iconSize: [20, 20]
+        });
+        marker.setIcon(icon);
+      }
       marker.addTo(this.map);
       this._markers.push(marker);
     });
+    const group = Leaflet.featureGroup(this._markers);
+    this.map.fitBounds(group.getBounds().pad(0.1));
   }
 
   setNewPaths(paths, selectedRouteIndex) {
