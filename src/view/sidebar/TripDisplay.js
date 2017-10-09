@@ -55,17 +55,17 @@ const TripHeader = ({ trip }) => {
     return depLabel + " -- " + arrLabel;
   }
 
-  function getDuration(legs) {
-    const departureTime = Moment(legs[0].departureTime);
-    const arrivalTime = Moment(legs[trip.legs.length - 1].arrivalTime);
-    return arrivalTime.diff(departureTime, "minutes");
-  }
-
   return (
     <div className={styles.tripHeader}>
       <div className={styles.tripTime}>
         <span>{getTimeLabel(trip.legs)}</span>
-        <span>{getDuration(trip.legs)} min</span>
+        <span>
+          {getDuration(
+            trip.legs[0].departureTime,
+            trip.legs[trip.legs.length - 1].arrivalTime
+          )}{" "}
+          min
+        </span>
       </div>
       <span>Transfers {trip.transfers}</span>
     </div>
@@ -79,10 +79,14 @@ const TripDetails = ({ trip }) => {
         switch (leg.type) {
           case "walk":
             return (
-              <Walk key={i} leg={leg} isLastLeg={i === trip.legs.length - 1} />
+              <WalkLeg
+                key={i}
+                leg={leg}
+                isLastLeg={i === trip.legs.length - 1}
+              />
             );
           case "pt":
-            return <Pt key={i} leg={leg} />;
+            return <PtLeg key={i} leg={leg} />;
           default:
             return <span>Implement leg type: {leg.type}</span>;
         }
@@ -91,81 +95,85 @@ const TripDetails = ({ trip }) => {
   );
 };
 
-const Waypoint = ({ time, label, isLastLeg }) => {
+const WalkLeg = ({ leg, isLastLeg }) => {
   return (
-    <div className={styles.legRow}>
-      <div className={styles.legRowLeftColumnContainer}>
-        <span className={styles.legRowLeftColumn}>{time}</span>
-      </div>
-      <div className={styles.legRowDetails}>
-        <div className={styles.legDecoration}>
-          <div className={styles.waypointCircle} />
-          {isLastLeg ? "" : <div className={styles.line} />}
-        </div>
-        <div className={styles.waypointLabel}>
-          <span>{label}</span>
-        </div>
-      </div>
-    </div>
+    <Leg
+      leg={leg}
+      isLastLeg={isLastLeg}
+      waypointName={findFirstStreetName(leg.instructions)}
+      lastWaypointName={findLastStreetName(leg.instructions)}
+    />
   );
 };
 
-const Description = ({ type, description }) => {
-  return (
-    <div className={styles.legRow}>
-      <div className={styles.legRowLeftColumnContainer}>
-        <span className={styles.legRowLeftColumn}>{type}</span>
-      </div>
-      <div className={styles.legRowDetails}>
-        <div className={styles.legDecoration}>
-          <div className={styles.line} />
-        </div>
-        <div className={styles.legRowDescription}>{description}</div>
-      </div>
-    </div>
-  );
-};
-
-const Walk = ({ leg, isLastLeg }) => {
-  function roundDistance(distance) {
-    return Math.round(distance / 100) * 100;
+class PtLeg extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showStops: false
+    };
   }
 
-  function findFirstStreetName(instructions) {
-    let instruction = instructions.find(instruction => {
-      return instruction.street_name && instruction.street_name != "";
-    });
-    return instruction ? instruction.street_name : "somewhere";
+  handleToggleButtonClick() {
+    this.setState({ showStops: !this.state.showStops });
   }
 
-  function findLastStreetName(instructions) {
-    let result = "somewhere";
-
-    for (let i = instructions.length - 1; i >= 0; i--) {
-      let instruction = instructions[i];
-      if (instruction.street_name && instruction.street_name != "") {
-        result = instruction.street_name;
-        break;
-      }
-    }
-    return result;
+  render() {
+    const legDescription = (
+      <button onClick={e => this.handleToggleButtonClick()}>
+        <span>{this.props.leg.stops.length} Stops </span>
+      </button>
+    );
+    return (
+      <Leg
+        leg={this.props.leg}
+        isLastLeg={this.props.isLastLeg}
+        waypointName={findStopName(this.props.leg.stops)}
+        legDescription={legDescription}
+      >
+        {this.state.showStops ? (
+            <div>
+              {this.props.leg.stops.map(stop => {
+                return (
+                  <div key={stop.stop_id}>
+                    <TripElement
+                      leftColumn={Moment(stop.departureTime).format("HH:mm")}
+                      decorationType={TripElementDecorationType.IN_BETWEEN_STOP}
+                    >
+                      <span>{stop.stop_name}</span>
+                    </TripElement>
+                  </div>
+                );
+              })}
+            </div>
+        ) : (
+          ""
+        )}
+      </Leg>
+    );
   }
+}
 
+const Leg = ({
+  leg,
+  isLastLeg = false,
+  waypointName,
+  legDescription,
+  lastWaypointName = "",
+  children
+}) => {
   return (
     <div className={styles.leg}>
       <Waypoint
         time={Moment(leg.departureTime).format("HH:mm")}
-        label={findFirstStreetName(leg.instructions)}
-        isLastLeg={false}
+        name={waypointName}
       />
-      <Description
-        type={leg.type}
-        description={roundDistance(leg.distance) + "m"}
-      />
+      <LegDescription type={leg.type}>{legDescription}</LegDescription>
+      {children}
       {isLastLeg ? (
         <Waypoint
           time={Moment(leg.arrivalTime).format("HH:mm")}
-          label={findLastStreetName(leg.instructions)}
+          name={lastWaypointName}
           isLastLeg={true}
         />
       ) : (
@@ -175,22 +183,70 @@ const Walk = ({ leg, isLastLeg }) => {
   );
 };
 
-const Pt = ({ leg }) => {
+const Waypoint = ({ time, name, isLastLeg = false }) => {
   return (
-    <div className={styles.leg}>
-      <Waypoint
-        time={Moment(leg.departureTime).format("HH:mm")}
-        label={leg.stops[0].stop_name}
-      />
-      <Description
-        type={leg.type}
-        description={
-          getDuration(leg.arrivalTime, leg.departureTime) +
-          " min, " +
-          leg.stops.length +
-          " Stops"
-        }
-      />
+    <TripElement
+      leftColumn={time}
+      isLastElement={isLastLeg}
+      decorationType={TripElementDecorationType.WAYPOINT}
+    >
+      <span className={styles.waypointName}>{name}</span>
+    </TripElement>
+  );
+};
+
+const LegDescription = ({ type, children }) => {
+  return (
+    <TripElement
+      leftColumn={type}
+      isLastElement={false}
+      decorationType={TripElementDecorationType.NONE}
+    >
+      <div className={styles.legRowDescription}>{children}</div>
+    </TripElement>
+  );
+};
+
+const TripElement = ({
+  leftColumn,
+  children,
+  isLastElement,
+  decorationType
+}) => {
+  return (
+    <div className={styles.tripElement}>
+      <div className={styles.tripElementLeftColumn}>{leftColumn}</div>
+      <div className={styles.tripElementContent}>
+        <TripElementDecoration
+          isLastElement={isLastElement}
+          decorationType={decorationType}
+        />
+        <div className={styles.tripElementDetails}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const TripElementDecoration = ({ isLastElement, decorationType }) => {
+  function getCircle(decorationType) {
+    switch (decorationType) {
+      case TripElementDecorationType.WAYPOINT:
+        return <div className={styles.waypointCircle} />;
+      case TripElementDecorationType.IN_BETWEEN_STOP:
+        return <div className={styles.waypointCircle} />;
+      default:
+        return "";
+    }
+  }
+
+  function getLine(isLastElement) {
+    return isLastElement ? "" : <div className={styles.line} />;
+  }
+
+  return (
+    <div className={styles.tripElementDecoration}>
+      {getCircle(decorationType)}
+      {getLine(isLastElement)}
     </div>
   );
 };
@@ -198,3 +254,38 @@ const Pt = ({ leg }) => {
 function getDuration(arrival, departure) {
   return Moment(arrival).diff(Moment(departure), "minutes");
 }
+
+function roundDistance(distance) {
+  return Math.round(distance / 100) * 100;
+}
+
+function findFirstStreetName(instructions) {
+  let instruction = instructions.find(instruction => {
+    return instruction.street_name && instruction.street_name != "";
+  });
+  return instruction ? instruction.street_name : "somewhere";
+}
+
+function findLastStreetName(instructions) {
+  let result = "somewhere";
+
+  for (let i = instructions.length - 1; i >= 0; i--) {
+    let instruction = instructions[i];
+    if (instruction.street_name && instruction.street_name != "") {
+      result = instruction.street_name;
+      break;
+    }
+  }
+  return result;
+}
+
+function findStopName(stops) {
+  if (stops && stops.length > 0) return stops[0].stop_name;
+  return "";
+}
+
+const TripElementDecorationType = {
+  WAYPOINT: 0,
+  IN_BETWEEN_STOP: 1,
+  NONE: 2
+};

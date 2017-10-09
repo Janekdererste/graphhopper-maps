@@ -41,24 +41,25 @@
   justify-content: space-between;
 }
 
-.legRowLeftColumnContainer {
+.tripElementLeftColumn {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 4rem;
+  padding-right:1rem;
 }
 
 .legRowLeftColumn {
   margin-right: 1rem;
 }
 
-.legRow {
+.tripElement {
   display: flex;
   flex-direction: row;
   align-content: stretch;
 }
 
-.legRowDetails {
+.tripElementContent {
   display: flex;
   flex-direction: row;
   flex: 5;
@@ -74,8 +75,11 @@
   position: relative;
 }
 
-.waypointLabel {
+.tripElementDetails {
   margin-left: 1rem;
+}
+
+.waypointName {
   font-weight: bold;
 }
 
@@ -87,7 +91,7 @@
   top: 7px;
 }
 
-.legDecoration {
+.tripElementDecoration {
   display: flex;
   flex-direction: column;
   align-items: center;
