@@ -34,7 +34,7 @@ export default class Query {
     if (search.timeOption == TimeOption.NOW) {
       result += new Date(Date.now()).toISOString();
     } else {
-      result += search.departureTime.toISOString();
+      result += search.departureDateTime.toISOString();
       if (search.timeOption == TimeOption.ARRIVAL) {
         result += "&arrive_by=true";
       }

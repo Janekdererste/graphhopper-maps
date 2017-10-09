@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
 import styles from "./SearchInput.css";
 
@@ -50,7 +51,10 @@ const TimeSelect = ({ onChange, search }) => {
         </select>
       </div>
       {search.timeOption != TimeOption.NOW ? (
-        <TimeInput onChange={onChange} search={search} />
+        <div>
+          <TimeInput onChange={onChange} search={search} />
+          <DateInput onChange={onChange} search={search} />
+        </div>
       ) : (
         ""
       )}
@@ -60,18 +64,31 @@ const TimeSelect = ({ onChange, search }) => {
 
 const TimeInput = ({ onChange, search }) => {
   return (
-    <div>
-      <input
-        className={styles.timeInput}
-        type="datetime-local"
-        value={search.departureTime.toISOString().substring(0, 16)}
-        onChange={e =>
-          onChange({
-            type: SearchActionType.DEPARTURE_TIME,
-            value: new Date(e.target.value)
-          })}
-      />
-    </div>
+    <input
+      type="time"
+      className={styles.timeInput}
+      value={search.departureDateTime.format("hh:mm")}
+      onChange={e =>
+        onChange({
+          type: SearchActionType.DEPARTURE_TIME,
+          value: e.target.value
+        })}
+    />
+  );
+};
+
+const DateInput = ({ onChange, search }) => {
+  return (
+    <input
+      className={styles.timeInput}
+      type="date"
+      value={search.departureDateTime.format("YYYY-MM-DD")}
+      onChange={e =>
+        onChange({
+          type: SearchActionType.DEPARTURE_DATE,
+          value: e.target.value
+        })}
+    />
   );
 };
 
@@ -90,12 +107,6 @@ const Options = ({ search, onChange }) => {
       </button>
       {search.isShowingOptions ? (
         <div>
-          <TextInput
-            value={search.weighting}
-            label="Weighting"
-            actionType={SearchActionType.WEIGHTING}
-            onChange={onChange}
-          />
           <TextInput
             value={search.maxWalkDistance}
             label="Max. Walking Distance"

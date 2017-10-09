@@ -30,6 +30,7 @@ export default class RouteStore extends Store {
       case SearchActionType.TO:
       case SearchActionType.WEIGHTING:
       case SearchActionType.DEPARTURE_TIME:
+      case SearchActionType.DEPARTURE_DATE:
       case SearchActionType.MAX_WALK_DISTANCE:
       case SearchActionType.LIMIT_SOLUTIONS:
       case SearchActionType.TIME_OPTION:
