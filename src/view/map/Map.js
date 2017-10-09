@@ -17,7 +17,7 @@ class LeafletComponent extends React.Component {
     this.leaflet = new LeafletAdapter(this.leafletRoot);
 
     //This is probably a nasty hack and should be done differently in the distant future
-    this._forceRerenderAfterTimeout(this.leaflet);
+    this._forceRerenderAfterTimeout(50);
   }
 
   componentWillReceiveProps({ routes, search }) {
@@ -54,10 +54,15 @@ class LeafletComponent extends React.Component {
     );
   }
 
-  _forceRerenderAfterTimeout() {
+  _forceRerenderAfterTimeout(timeout) {
     setTimeout(() => {
-      this.leaflet.invalidateSize();
-    }, 100);
+      if (this.leafletRoot.clientHeight > 0) {
+        this.leaflet.invalidateSize();
+      } else {
+        console.log(timeout);
+        this._forceRerenderAfterTimeout(timeout * 2);
+      }
+    }, timeout);
   }
 
   _adjustBoundingBox() {
