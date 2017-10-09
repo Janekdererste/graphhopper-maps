@@ -82,6 +82,6 @@ module.exports = {
         from: srcPath + "/index.html",
         to: "index.html"
       }
-    ])
+    ]),
   ]
 };

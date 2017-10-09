@@ -4,9 +4,8 @@
   "license": "UNLICENSED",
   "version": "0.0.1",
   "scripts": {
-    "develop":
-      "webpack-dev-server --config webpack.config.js --progress --colors --port 3000 --hot",
-    "build": "webpack --config webpack.config.js"
+    "develop": "webpack-dev-server --config webpack.common.js --progress --colors --port 3000 --hot",
+    "build": "webpack --config webpack.prod.js"
   },
   "dependencies": {
     "leaflet": "^1.2.0",
@@ -20,6 +19,7 @@
     "babel-polyfill": "^6.26.0",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.8.2",
+    "webpack-merge": "^4.1.0",
     "file-loader": "^0.11.2",
     "style-loader": "^0.18.2",
     "css-loader": "^0.28.7",
