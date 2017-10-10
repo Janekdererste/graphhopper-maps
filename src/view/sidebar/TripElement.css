@@ -1,0 +1,78 @@
+.tripElement {
+  display: flex;
+  flex-direction: row;
+  align-content: stretch;
+}
+
+.tripElementLeftColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 4rem;
+  padding-right: 1rem;
+}
+
+.tripElementContent {
+  display: flex;
+  flex-direction: row;
+  flex: 5;
+}
+
+.tripElementDetails {
+  margin-left: 1rem;
+}
+
+.legRowDescription {
+  margin: 1rem 0 1rem 1rem;
+}
+
+.tripDescriptionButton {
+  background-color: transparent;
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: inherit;
+  font-size: inherit;
+  transition-duration: 0.2s;
+}
+
+.line {
+  background-color: #1eddff;
+  flex: 1;
+  width: 4px;
+  position: relative;
+  top: 7px;
+}
+
+.waypointCircle {
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid black;
+  height: 8px;
+  width: 8px;
+  top: 7px;
+  position: relative;
+}
+
+.stopOnLegCircle {
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #1eddff;
+  height: 8px;
+  width: 8px;
+  top: 7px;
+  position: relative;
+}
+
+.waypointName {
+  font-weight: bold;
+}
+
+.tripElementDecoration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 8px;
+}

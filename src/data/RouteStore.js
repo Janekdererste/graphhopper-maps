@@ -73,7 +73,7 @@ export default class RouteStore extends Store {
     const nowSelectedPath = Object.assign({}, yetUnselectedPath, {
       isSelected: true
     });
-    state.paths[newSelectedRouteIndex].nowSelectedPath;
+    state.paths[newSelectedRouteIndex] = nowSelectedPath;
     return state;
   }
 
@@ -115,6 +115,7 @@ export default class RouteStore extends Store {
       type: leg.type,
       distance: leg.distance,
       legDetails: this._createLegDetails(leg),
+      distance: this._createLegDistance(leg),
       isCollapsed: true
     };
   }
@@ -142,7 +143,10 @@ export default class RouteStore extends Store {
     }
     if (leg.instructions[instructionIndex].street_name != "")
       return leg.instructions[instructionIndex].street_name;
-    else return leg.geometry.coordinates[coordIndex];
+    else {
+      const coord = leg.geometry.coordinates[coordIndex];
+      return coord[0] + ", " + coord[1];
+    }
   }
 
   _findPtLocation(leg, isArrival) {
@@ -152,7 +156,8 @@ export default class RouteStore extends Store {
     if (leg.stops[stopIndex].stop_name != "") {
       return leg.stops[stopIndex].stop_name;
     } else {
-      return leg.stops[stopIndex].geometry.coordinates;
+      const coord = leg.stops[stopIndex].geometry.coordinates;
+      return coord[0] + ", " + coord[1];
     }
   }
 
@@ -185,6 +190,19 @@ export default class RouteStore extends Store {
         geometry: stop.geometry
       };
     });
+  }
+
+  _createLegDistance(leg) {
+    switch (leg.type) {
+      case "walk":
+        return Math.round(leg.distance / 100 * 100) + "m";
+      case "pt":
+        return leg.stops.length + " Stops";
+      default:
+        throw Error(
+          "createLegDescription for type: " + leg.type + " is not implemented"
+        );
+    }
   }
 }
 
