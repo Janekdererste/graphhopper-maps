@@ -25,7 +25,7 @@ export default class RouteStore extends Store {
           paths: action.value
         });
       case RouteActionType.SELECTED_ROUTE_INDEX:
-        return Object.assign({}, state, { selectedRouteIndex: action.value });
+        return this._selectRoute(state, action.value);
       case SearchActionType.FROM:
       case SearchActionType.TO:
       case SearchActionType.WEIGHTING:
@@ -58,9 +58,133 @@ export default class RouteStore extends Store {
     }
   }
 
-  parseResult(text, callback, error) {
+  _selectRoute(oldState, newSelectedRouteIndex) {
+    const oldSelectedPathIndex = oldState.selectedRouteIndex;
+    const state = Object.assign({}, oldState, {
+      selectedRouteIndex: newSelectedRouteIndex
+    });
+
+    const formerSelectedPath = state.paths[oldSelectedPathIndex];
+    const unselectedPath = Object.assign({}, formerSelectedPath, {
+      isSelected: false
+    });
+    state.paths[oldSelectedPathIndex] = unselectedPath;
+    const yetUnselectedPath = state.paths[newSelectedRouteIndex];
+    const nowSelectedPath = Object.assign({}, yetUnselectedPath, {
+      isSelected: true
+    });
+    state.paths[newSelectedRouteIndex].nowSelectedPath;
+    return state;
+  }
+
+  parseResult(text) {
     let result = JSON.parse(text);
-    return result.paths;
+    return this._createPaths(result);
+  }
+
+  _createPaths(result) {
+    let paths = result.paths.map(path => this._createPath(path));
+    paths[this.getState().selectedRouteIndex].isSelected = true;
+    return paths;
+  }
+
+  _createPath(path) {
+    if (!path.legs || !path.legs.length || path.legs.length < 1)
+      throw Error("The result did not contain legs");
+
+    return {
+      transfers: path.transfers,
+      departureTime: path.legs[0].departureTime,
+      arrivalTime: path.legs[path.legs.length - 1].arrivalTime,
+      legs: this._createLegs(path.legs),
+      isSelected: false
+    };
+  }
+
+  _createLegs(legs) {
+    return legs.map(leg => this._createLeg(leg));
+  }
+
+  _createLeg(leg) {
+    return {
+      departureLocation: this._findLocation(leg, true),
+      arrivalLocation: this._findLocation(leg, false),
+      departureTime: leg.departureTime,
+      arrivalTime: leg.arrivalTime,
+      geometry: leg.geometry,
+      type: leg.type,
+      distance: leg.distance,
+      legDetails: this._createLegDetails(leg),
+      isCollapsed: true
+    };
+  }
+
+  _findLocation(leg, isArrival) {
+    switch (leg.type) {
+      case "walk":
+        return this._findWalkLocation(leg, isArrival);
+      case "pt":
+        return this._findPtLocation(leg, isArrival);
+      default:
+        throw Error(
+          "find departure location for: " + leg.type + " is not implemented"
+        );
+    }
+  }
+
+  _findWalkLocation(leg, isArrival) {
+    let instructionIndex = 0;
+    let coordIndex = 0;
+
+    if (!isArrival) {
+      instructionIndex = leg.instructions.length - 1;
+      coordIndex = leg.geometry.coordinates.length - 1;
+    }
+    if (leg.instructions[instructionIndex].street_name != "")
+      return leg.instructions[instructionIndex].street_name;
+    else return leg.geometry.coordinates[coordIndex];
+  }
+
+  _findPtLocation(leg, isArrival) {
+    let stopIndex = 0;
+    if (!isArrival) stopIndex = leg.stops.length - 1;
+
+    if (leg.stops[stopIndex].stop_name != "") {
+      return leg.stops[stopIndex].stop_name;
+    } else {
+      return leg.stops[stopIndex].geometry.coordinates;
+    }
+  }
+
+  _createLegDetails(leg) {
+    switch (leg.type) {
+      case "walk":
+        return this._createWalkLegDetails(leg);
+      case "pt":
+        return this._createPtLegDetails(leg);
+      default:
+        throw Error(
+          "create leg details for type: " + leg.type + " is not implemented"
+        );
+    }
+  }
+  _createWalkLegDetails(leg) {
+    return leg.instructions.map(instruction => {
+      return {
+        main: instruction.text,
+        additional: instruction.sign
+      };
+    });
+  }
+
+  _createPtLegDetails(leg) {
+    return leg.stops.map(stop => {
+      return {
+        main: stop.stop_name,
+        additional: stop.departureTime,
+        geometry: stop.geometry
+      };
+    });
   }
 }
 

@@ -79,12 +79,12 @@ export default class LeafletAdapter {
   }
 
   setNewPaths(paths, selectedRouteIndex) {
-    let featureCollections = paths.map((path, i) =>
-      this._legsToFeatureCollection(path.legs, i)
-    );
     this.unselectedLayer.clearLayers();
     this.selectedLayer.clearLayers();
 
+    let featureCollections = paths.map((path, i) =>
+      this._legsToFeatureCollection(path.legs, i)
+    );
     featureCollections.forEach((collection, i) => {
       if (i === selectedRouteIndex) {
         this.selectedLayer.addData(collection);
@@ -102,12 +102,12 @@ export default class LeafletAdapter {
       features.push(this._createFeatureFromGeometry(leg.type, leg.geometry));
       if (leg.type === "pt") {
         features.push(
-          this._createFeatureFromGeometry(leg.type, leg.stops[0].geometry)
+          this._createFeatureFromGeometry(leg.type, leg.legDetails[0].geometry)
         );
         features.push(
           this._createFeatureFromGeometry(
             leg.type,
-            leg.stops[leg.stops.length - 1].geometry
+            leg.legDetails[leg.legDetails.length - 1].geometry
           )
         );
       }
