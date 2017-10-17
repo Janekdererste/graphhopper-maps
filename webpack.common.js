@@ -14,7 +14,13 @@ module.exports = {
   devtool: "source-map",
   devServer: {
     publicPath: "/",
-    contentBase: distPath
+    contentBase: distPath,
+    proxy: {
+      "/route": {
+        target: "http://localhost:3000",
+        pathRewrite: { "^/route": "" }
+      }
+    }
   },
   resolve: {
     // Leaflet image Alias resolutions
@@ -82,6 +88,6 @@ module.exports = {
         from: srcPath + "/index.html",
         to: "index.html"
       }
-    ]),
+    ])
   ]
 };
