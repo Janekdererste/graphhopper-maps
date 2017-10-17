@@ -7,7 +7,6 @@ export default class Addressbar extends React.Component {
   constructor(props) {
     super(props);
     this._validateProps(props);
-    this._history = window.history;
     this._setSearchParametersFromAddressbarIfNecessary();
   }
 
@@ -20,8 +19,7 @@ export default class Addressbar extends React.Component {
   }
 
   _setSearchParametersFromAddressbarIfNecessary() {
-    let currentLocation = window.location.href;
-    let currentURL = new URL(currentLocation);
+    let currentURL = new URL(window.location.href);
     if (currentURL.pathname && currentURL.pathname === "/route") {
       const action = {
         type: SearchActionType.SEARCH_URL_CHANGED,
@@ -36,10 +34,9 @@ export default class Addressbar extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    let currentLocation = window.location.href;
-    let currentURL = new URL(currentLocation);
+    let currentURL = new URL(window.location.href);
     let query = createQuery(props.search);
-    this._history.replaceState({ name: "last state" }, "", query);
+    window.history.replaceState({ name: "last state" }, "", query);
   }
 
   render() {

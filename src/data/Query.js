@@ -75,7 +75,7 @@ const parseQuery = (search, searchParams) => {
       search.departureDateTime = moment(departureDateTime);
 
       const arriveBy = searchParams.get(ARRIVE_BY);
-      if (arriveBy && arriveBy === true) {
+      if (arriveBy && arriveBy == "true") {
         search.timeOption = TimeOption.ARRIVAL;
       } else {
         search.timeOption = TimeOption.DEPARTURE;
