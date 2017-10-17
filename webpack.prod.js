@@ -8,7 +8,7 @@ module.exports = function(env) {
       new webpack.optimize.UglifyJsPlugin({
         beautify: false,
         comments: false,
-        sourceMap: true
+        sourceMap: false
       })
     ]
   });

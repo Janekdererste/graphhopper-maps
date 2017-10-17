@@ -67,7 +67,7 @@ const TimeInput = ({ onChange, search }) => {
     <input
       type="time"
       className={styles.timeInput}
-      value={search.departureDateTime.format("hh:mm")}
+      value={search.departureDateTime.format("HH:mm")}
       onChange={e =>
         onChange({
           type: SearchActionType.DEPARTURE_TIME,

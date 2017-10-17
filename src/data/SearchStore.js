@@ -52,17 +52,18 @@ export default class SearchStore extends Store {
   }
 
   _reduceDepartureTime(state, time) {
-    let departure = moment(time, "HH:mm");
-    departure.year = state.departureDateTime.year;
-    departure.month = state.departureDateTime.month;
-    departure.day = state.departureDateTime.day;
+    let departure = moment.utc(time, "HH:mm");
+    departure.year(state.departureDateTime.year());
+    departure.month(state.departureDateTime.month());
+    departure.day(state.departureDateTime.day());
     return Object.assign({}, state, { departureDateTime: departure });
   }
 
   _reduceDepartureDate(state, date) {
-    let departure = moment(date, "YYYY-MM-DD");
-    departure.hour = state.departureDateTime.hour;
-    departure.minute = state.departureDateTime.minute;
+    let departure = moment.utc(date, "YYYY-MM-DD");
+
+    departure.hour(state.departureDateTime.hour());
+    departure.minute(state.departureDateTime.minute());
     return Object.assign({}, state, { departureDateTime: departure });
   }
 
