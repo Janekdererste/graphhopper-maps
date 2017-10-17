@@ -1,5 +1,5 @@
 import DataManager, { DataManagerActionType } from "./DataManager.js";
-import Query from "./Query.js";
+import { createQuery } from "./Query.js";
 import Store from "./Store.js";
 import SearchStore, { TimeOption, SearchActionType } from "./SearchStore.js";
 
@@ -35,7 +35,7 @@ export default class RouteStore extends Store {
       case SearchActionType.LIMIT_SOLUTIONS:
       case SearchActionType.TIME_OPTION:
       case RouteActionType.REQUEST_PATH:
-        DataManager.queryRoute(new Query(this.searchStore.getState()));
+        DataManager.queryRoute(createQuery(this.searchStore.getState()));
         return Object.assign({}, state, {
           isFetching: true,
           selectedRouteIndex: 0

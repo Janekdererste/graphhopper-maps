@@ -26,12 +26,12 @@ class LeafletComponent extends React.Component {
       this.leaflet.setMarkers([
         {
           actionType: SearchActionType.FROM,
-          coords: search.from,
+          coords: search.from.toArray(),
           icon: fromIcon
         },
         {
           actionType: SearchActionType.TO,
-          coords: search.to
+          coords: search.to.toArray()
         }
       ]);
     }

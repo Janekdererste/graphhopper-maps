@@ -1,11 +1,13 @@
 import Store from "./Store.js";
+import { parseQuery } from "./Query.js";
+import Point from "./Point.js";
 import moment from "moment";
 
 export default class SearchStore extends Store {
   getInitialState() {
     return {
-      from: [52.60137941045536, 13.51249694824219],
-      to: [52.41121553671389, 13.354568481445314],
+      from: Point.createFromArray([52.60137941045536, 13.51249694824219]),
+      to: Point.createFromArray([52.41121553671389, 13.354568481445314]),
       departureDateTime: new moment(),
       weighting: "fastest",
       maxWalkDistance: 1000,
@@ -19,11 +21,11 @@ export default class SearchStore extends Store {
     switch (action.type) {
       case SearchActionType.FROM:
         return Object.assign({}, state, {
-          from: this._transformToPoint(action.value)
+          from: Point.create(action.value)
         });
       case SearchActionType.TO:
         return Object.assign({}, state, {
-          to: this._transformToPoint(action.value)
+          to: Point.create(action.value)
         });
       case SearchActionType.WEIGHTING:
         return Object.assign({}, state, { weighting: action.value });
@@ -35,6 +37,8 @@ export default class SearchStore extends Store {
         return Object.assign({}, state, { maxWalkDistance: action.value });
       case SearchActionType.LIMIT_SOLUTIONS:
         return Object.assign({}, state, { limitSolutions: action.value });
+      case SearchActionType.SEARCH_URL_CHANGED:
+        return this._reduceSearchParams(state, action.value);
       case SearchActionType.TIME_OPTION:
         return Object.assign({}, state, {
           timeOption: action.value,
@@ -62,15 +66,9 @@ export default class SearchStore extends Store {
     return Object.assign({}, state, { departureDateTime: departure });
   }
 
-  _transformToPoint(input) {
-    let result = input;
-    if (typeof input === "string") {
-      let splitInput = input.split(",");
-      result = splitInput.map(value => {
-        return Number.parseFloat(value);
-      });
-    }
-    return result;
+  _reduceSearchParams(state, searchParams) {
+    let newState = Object.assign({}, state);
+    return parseQuery(newState, searchParams);
   }
 }
 
@@ -82,6 +80,7 @@ const SearchActionType = {
   DEPARTURE_DATE: "SearchActionType_DEPARTURE_DATE",
   MAX_WALK_DISTANCE: "SearchActionType_MAX_WALK_DISTANCE",
   LIMIT_SOLUTIONS: "SearchActionType_LIMIT_SOLUTIONS",
+  SEARCH_URL_CHANGED: "SearchActionType_SEARCH_URL_CHANGED",
   TIME_OPTION: "SearchActionType_TIME_OPTION",
   IS_SHOWING_OPTIONS: "SearchActionType_IS_SHOWING_OPTIONS"
 };

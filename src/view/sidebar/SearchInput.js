@@ -17,13 +17,13 @@ const LocationInput = ({ search, onChange }) => {
   return (
     <div className={styles.locationInput}>
       <TextInput
-        value={search.from}
+        value={search.from.toString()}
         label="From"
         actionType={SearchActionType.FROM}
         onChange={onChange}
       />
       <TextInput
-        value={search.to}
+        value={search.to.toString()}
         label="To"
         actionType={SearchActionType.TO}
         onChange={onChange}

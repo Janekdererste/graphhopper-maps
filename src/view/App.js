@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "./sidebar/Sidebar.js";
 import Map from "./map/Map.js";
+import Addressbar from "./addressbar/Addressbar.js";
 import PathStore, { RouteActionType } from "../data/RouteStore.js";
 import SearchStore from "../data/SearchStore.js";
 import Dispatcher from "../data/Dispatcher.js";
@@ -36,6 +37,10 @@ export default class App extends React.Component {
     this.setState({ routes: this.routeStore.getState() });
   }
 
+  handleHistoryChanged(action) {
+    Dispatcher.dispatch(action);
+  }
+
   handleSearchChange(action) {
     Dispatcher.dispatch(action);
   }
@@ -47,6 +52,10 @@ export default class App extends React.Component {
   render() {
     return (
       <div className={styles.appWrapper}>
+        <Addressbar
+          search={this.state.search}
+          onHistoryChange={action => this.handleHistoryChanged(action)}
+        />
         <div className={styles.sidebar}>
           <Sidebar
             routes={this.state.routes}
