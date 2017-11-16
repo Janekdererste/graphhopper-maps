@@ -3,4 +3,5 @@
   flex-direction: column;
   align-content: stretch;
   height: 100%;
+  min-width: 27rem;
 }

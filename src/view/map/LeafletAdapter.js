@@ -16,7 +16,7 @@ export default class LeafletAdapter {
 
   _initializeTileLayer() {
     Leaflet.tileLayer(
-      "http://a.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png",
+      "https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=2ff19cdf28f249e2ba8e14bc6c083b39",
       {
         attribution:
           'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',

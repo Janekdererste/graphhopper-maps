@@ -34,12 +34,15 @@ class Leg extends React.Component {
   }
 
   _createStopOnLeg(detail) {
-    return (
-      <StopOnLeg
-        time={moment(detail.additional).format("HH:mm")}
-        name={detail.main}
-      />
-    );
+    if (detail.additional) {
+      return (
+        <StopOnLeg
+          time={moment(detail.additional).format("HH:mm")}
+          name={detail.main}
+        />
+      );
+    }
+    return "";
   }
 
   _createTurn(detail) {
