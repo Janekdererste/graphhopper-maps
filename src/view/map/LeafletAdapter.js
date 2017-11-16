@@ -16,7 +16,7 @@ export default class LeafletAdapter {
 
   _initializeTileLayer() {
     Leaflet.tileLayer(
-      "https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=2ff19cdf28f249e2ba8e14bc6c083b39",
+      "https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=2ff19cdf28f249e2ba8e14bc6c083b39",
       {
         attribution:
           'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -79,8 +79,7 @@ export default class LeafletAdapter {
   }
 
   setNewPaths(paths, selectedRouteIndex) {
-    this.unselectedLayer.clearLayers();
-    this.selectedLayer.clearLayers();
+    this.clearPaths();
 
     let featureCollections = paths.map((path, i) =>
       this._legsToFeatureCollection(path.legs, i)
@@ -94,6 +93,11 @@ export default class LeafletAdapter {
     });
     this.selectedLayer.bringToFront();
     this.map.fitBounds(this.selectedLayer.getBounds());
+  }
+
+  clearPaths() {
+    this.unselectedLayer.clearLayers();
+    this.selectedLayer.clearLayers();
   }
 
   _legsToFeatureCollection(legs, pathIndex) {

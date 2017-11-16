@@ -21,7 +21,9 @@ class LeafletComponent extends React.Component {
   }
 
   componentWillReceiveProps({ routes, search }) {
-    if (routes && routes.paths && routes.paths.length > 0) {
+    if (routes.isFetching || !routes.isLastQuerySuccess) {
+      this.leaflet.clearPaths();
+    } else if (routes.paths && routes.paths.length > 0) {
       this.leaflet.setNewPaths(routes.paths, routes.selectedRouteIndex);
       this.leaflet.setMarkers([
         {
