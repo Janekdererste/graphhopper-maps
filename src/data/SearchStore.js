@@ -52,7 +52,6 @@ export default class SearchStore extends Store {
   }
 
   _reduceDepartureTime(state, time) {
-    //let departure = moment.utc(time, "HH:mm");
     let departure = moment(time, "HH:mm");
     departure.year(state.departureDateTime.year());
     departure.month(state.departureDateTime.month());

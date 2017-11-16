@@ -24,8 +24,10 @@ const createQuery = search => {
   function departureTime(search) {
     //the moment needs to be cloned before setting utc mode, because
     //otherwise the UI also displays utc time.
-    let time = search.departureDateTime.clone().utc().format();
-    console.log(time);
+    let time = search.departureDateTime
+      .clone()
+      .utc()
+      .format();
     url.searchParams.append(DEPARTURE_TIME, time);
 
     if (search.timeOption == TimeOption.ARRIVAL) {
