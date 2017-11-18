@@ -78,6 +78,7 @@ module.exports = {
       //This loads the png files the leaflet css points to
       {
         test: /\.png/,
+        //include: path.resolve(__dirname, "node_modules/leaflet/"),
         loader: "file-loader"
       }
     ]
@@ -87,6 +88,10 @@ module.exports = {
       {
         from: srcPath + "/index.html",
         to: "index.html"
+      },
+      {
+        from: path.resolve(srcPath, "favicon.png"),
+        to: "favicon.png"
       }
     ])
   ]

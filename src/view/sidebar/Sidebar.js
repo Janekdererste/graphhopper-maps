@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Sidebar.css";
+import logoImg from "../img/logo.png";
 import SearchInput from "./SearchInput.js";
 import TripDisplay from "./TripDisplay.js";
 import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
@@ -18,8 +19,17 @@ export default ({ routes, search, onSearchChange, onSearchClick }) => {
 
   return (
     <div className={styles.sidebar}>
+      <Logo />
       <SearchInput search={search} onSearchChange={onSearchChange} />
       {getSidebarContent(routes)}
+    </div>
+  );
+};
+
+const Logo = () => {
+  return (
+    <div className={styles.logo}>
+      <img src={logoImg} />
     </div>
   );
 };
