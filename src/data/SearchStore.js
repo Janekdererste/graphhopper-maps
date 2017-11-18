@@ -6,8 +6,8 @@ import moment from "moment";
 export default class SearchStore extends Store {
   getInitialState() {
     return {
-      from: Point.createFromArray([52.60137941045536, 13.51249694824219]),
-      to: Point.createFromArray([52.41121553671389, 13.354568481445314]),
+      from: Point.createFromArray([45.5138, -122.5769]),
+      to: Point.createFromArray([45.5653, -122.661]),
       departureDateTime: new moment(),
       weighting: "fastest",
       maxWalkDistance: 1000,

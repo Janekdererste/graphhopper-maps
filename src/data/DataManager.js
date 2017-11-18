@@ -1,23 +1,40 @@
 import Http from "./Http.js";
 import Dispatcher from "./Dispatcher.js";
 
-const endpoint = "http://dbms-env.eu-central-1.elasticbeanstalk.com";
+const endpoint = "http://graphhopper-trimet.eu-central-1.elasticbeanstalk.com";
 
 export default {
   queryRoute(query) {
     const url = endpoint + query;
-    console.log(query);
+
+    this.query(
+      url,
+      DataManagerActionType.RECEIVED_ROUTE,
+      DataManagerActionType.ROUTE_QUERY_ERROR
+    );
+  },
+
+  queryEndpointInfo(query) {
+    const url = endpoint + query;
+    this.query(
+      url,
+      DataManagerActionType.RECEIVED_INFO,
+      DataManagerActionType.INFO_QUERY_ERROR
+    );
+  },
+
+  query(url, successActionType, errorActionType) {
+    console.log(url);
     Http.makeGETRequest(
       url,
-      text => {
+      text =>
         Dispatcher.dispatch({
-          type: DataManagerActionType.RECEIVED_ROUTE,
+          type: successActionType,
           value: text
-        });
-      },
+        }),
       error =>
         Dispatcher.dispatch({
-          type: DataManagerActionType.ROUTE_QUERY_ERROR,
+          type: errorActionType,
           value: error.message
         })
     );
@@ -26,5 +43,7 @@ export default {
 
 export const DataManagerActionType = {
   RECEIVED_ROUTE: "DataManagerActionType_RECEIVED_ROUTE",
-  ROUTE_QUERY_ERROR: "DataManagerActionType_ROUTE_QUERY_ERROR"
+  RECEIVED_INFO: "DataManagerActoinType_RECEIVED_INFO",
+  ROUTE_QUERY_ERROR: "DataManagerActionType_ROUTE_QUERY_ERROR",
+  INFO_QUERY_ERROR: "DataManagerActionType_INFO_QUERY_ERROR"
 };

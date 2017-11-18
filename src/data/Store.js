@@ -1,8 +1,8 @@
 export default class Store {
   constructor(dispatcher) {
-    this._state = this.getInitialState();
     this._dispatchToken = dispatcher.addStore(action => this.dispatch(action));
     this._handlers = [];
+    this._state = this.getInitialState();
   }
 
   getInitialState() {

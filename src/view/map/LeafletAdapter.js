@@ -9,7 +9,6 @@ export default class LeafletAdapter {
   }
 
   _initializeMap() {
-    this.map.setView([52.517709, 13.410312], 13);
     this._initializeTileLayer();
     this._initializeRouteLayer();
   }
@@ -43,6 +42,13 @@ export default class LeafletAdapter {
 
   invalidateSize() {
     this.map.invalidateSize();
+  }
+
+  setBoundingBox(left, bottom, right, top) {
+    let corner1 = Leaflet.latLng(bottom, left);
+    let corner2 = Leaflet.latLng(top, right);
+    let bounds = Leaflet.latLngBounds(corner1, corner2);
+    this.map.fitBounds(bounds);
   }
 
   setMarkers(locations) {

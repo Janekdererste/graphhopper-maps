@@ -1,7 +1,10 @@
 import React from "react";
 import LeafletAdapter from "./LeafletAdapter.js";
+import Http from "../../data/Http.js";
 import styles from "./Map.css";
 import { SearchActionType } from "../../data/SearchStore.js";
+import InfoStore from "../../data/InfoStore.js";
+import Dispatcher from "../../data/Dispatcher.js";
 import fromIcon from "./circle.png";
 
 export default ({ routes, search }) => {
@@ -11,6 +14,8 @@ export default ({ routes, search }) => {
 class LeafletComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.infoStore = new InfoStore(Dispatcher);
+    this.infoStore.registerChangeHandler(() => this._handleInfoStoreChanged());
   }
 
   componentDidMount() {
@@ -18,6 +23,9 @@ class LeafletComponent extends React.Component {
 
     //This is probably a nasty hack and should be done differently in the distant future
     this._forceRerenderAfterTimeout(50);
+    if (this.infoStore.getState().boundingBox.length > 0) {
+      this.leaflet.setBoundingBox(this.infoStore.getState().boundingBox);
+    }
   }
 
   componentWillReceiveProps({ routes, search }) {
@@ -67,7 +75,19 @@ class LeafletComponent extends React.Component {
     }, timeout);
   }
 
-  _adjustBoundingBox() {
-    this.leaflet.fitBounds(this.selectedLayer.getBounds());
+  _handleInfoStoreChanged() {
+    let ghBoundingBox = this.infoStore.getState().boundingBox;
+    if (ghBoundingBox.length == 4) {
+      this.leaflet.setBoundingBox(
+        ghBoundingBox[0],
+        ghBoundingBox[1],
+        ghBoundingBox[2],
+        ghBoundingBox[3]
+      );
+    } else {
+      console.error(
+        "Bounding box received from server didn't have the correct format."
+      );
+    }
   }
 }
