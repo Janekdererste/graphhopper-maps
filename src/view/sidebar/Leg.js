@@ -28,9 +28,7 @@ class Leg extends React.Component {
     let creator = this._createTurn;
     if (leg.type === "pt") creator = this._createStopOnLeg;
 
-    return leg.legDetails.map(detail => {
-      return creator(detail);
-    });
+    return <div>{leg.legDetails.map(detail => creator(detail))}</div>;
   }
 
   _createStopOnLeg(detail) {

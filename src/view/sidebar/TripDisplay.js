@@ -67,21 +67,6 @@ const TripDetails = ({ trip }) => {
     <div className={styles.tripDetails}>
       {trip.legs.map((leg, i) => {
         return <Leg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />;
-
-        switch (leg.type) {
-          case "walk":
-            return (
-              <WalkLeg
-                key={i}
-                leg={leg}
-                isLastLeg={i === trip.legs.length - 1}
-              />
-            );
-          case "pt":
-            return <PtLeg key={i} leg={leg} />;
-          default:
-            return <span>Implement leg type: {leg.type}</span>;
-        }
       })}
     </div>
   );
