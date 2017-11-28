@@ -1,6 +1,6 @@
 import React from "react";
 
-import { createQuery } from "../../data/Query.js";
+import { CreateQuery } from "../../data/Query.js";
 import { SearchActionType } from "../../data/SearchStore.js";
 
 export default class Addressbar extends React.Component {
@@ -35,7 +35,7 @@ export default class Addressbar extends React.Component {
 
   componentWillReceiveProps(props) {
     let currentURL = new URL(window.location.href);
-    let query = createQuery(props.search);
+    let query = CreateQuery(props.search);
     window.history.replaceState({ name: "last state" }, "", query);
   }
 
