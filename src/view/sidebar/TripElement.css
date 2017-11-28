@@ -74,6 +74,14 @@
   position: relative;
 }
 
+.stopOnLegTime {
+  color: rgb(65, 121, 0);
+}
+
+.stopOnLegDelayedTime {
+  color: rgb(249, 119, 119);
+}
+
 .waypointName {
   font-weight: bold;
 }

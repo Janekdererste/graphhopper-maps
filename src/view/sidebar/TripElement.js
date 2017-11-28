@@ -1,13 +1,14 @@
 import React from "react";
+import moment from "moment";
 import styles from "./TripElement.css";
 
-const Waypoint = ({ time, name, isLastLeg = false }) => {
+const Waypoint = ({ time, timeClassName = "", name, isLastLeg = false }) => {
   return (
     <TripElement
       isLastElement={isLastLeg}
       decorationType={TripElementDecorationType.WAYPOINT}
     >
-      <span>{time}</span>
+      <span className={timeClassName}>{time}</span>
       <span className={styles.waypointName}>{name}</span>
     </TripElement>
   );
@@ -44,14 +45,23 @@ const LegDescription = ({ type, onClick, children }) => {
   );
 };
 
-const StopOnLeg = ({ time, name }) => {
+const StopOnLeg = ({ detail }) => {
+  let time, className;
+  if (detail.realtime) {
+    time = moment(detail.realtime).format("HH:mm");
+    className = styles.stopOnLegDelayedTime;
+  } else {
+    time = moment(detail.additional).format("HH:mm");
+    className = styles.stopOnLegTime;
+  }
+
   return (
     <TripElement
       isLastElement={false}
       decorationType={TripElementDecorationType.STOP_ON_LEG}
     >
-      <span>{time}</span>
-      <span>{name}</span>
+      <span className={className}>{time}</span>
+      <span>{detail.main}</span>
     </TripElement>
   );
 };
