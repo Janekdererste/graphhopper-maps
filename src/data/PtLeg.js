@@ -1,13 +1,20 @@
 import Leg from "./Leg.js";
 
+//import moments only for the dummy Realtime leg
+import moment from "moment";
+
 export default class PtLeg extends Leg {
   get isDelayed() {
     return this._isDelayed;
   }
 
-  constructor(apiLeg, realtimeLeg) {
+  constructor(apiLeg) {
     super(apiLeg);
-    this._initializeRealtime(realtimeLeg);
+
+    //create a delayed leg from time to time
+    if (Math.random() < 0.5) {
+      this._initializeRealtime(this._createDummyRealtimeLeg(apiLeg));
+    }
   }
 
   initializeDepartureLocation(apiLeg) {
@@ -37,14 +44,20 @@ export default class PtLeg extends Leg {
       return;
     }
     this._isDelayed = true;
-    this._legDetails = this.legDetails.map(detail => {
-      if (detail.main === realtimeLeg.stop_name) {
-        detail.realtime = realtimeLeg.departureTime;
-      } else {
-        throw Error(
-          "PtLeg: realtime leg and planned leg must have same stop order."
-        );
+    this._departureTime = realtimeLeg.departureTime;
+    this._arrivalTime = realtimeLeg.arrivalTime;
+    this._legDetails = this.legDetails.map((plannedStop, i) => {
+      if (i < realtimeLeg.stops.length) {
+        const realtimeStop = realtimeLeg.stops[i];
+        if (plannedStop.main === realtimeStop.stop_name) {
+          plannedStop.realtime = realtimeStop.departureTime;
+        } else {
+          throw Error(
+            "PtLeg: realtime leg and planned leg must have same stop order."
+          );
+        }
       }
+      return plannedStop;
     });
   }
 
@@ -58,5 +71,30 @@ export default class PtLeg extends Leg {
       const coord = apiLeg.stops[stopIndex].geometry.coordinates;
       return coord[0] + ", " + coord[1];
     }
+  }
+
+  _createDummyRealtimeLeg(apiLeg) {
+    //create a leg with 5 minutes delay on all stops
+    const stops = apiLeg.stops.map(stop => {
+      return {
+        stop_name: stop.stop_name,
+        departureTime: moment(stop.departureTime)
+          .add(5, "m")
+          .utc()
+          .format()
+      };
+    });
+    const realtimeLeg = {
+      departureTime: moment(apiLeg.departureTime)
+      .add(5, "m")
+      .utc()
+      .format(),
+      arrivalTime: moment(apiLeg.arrivalTime)
+      .add(5, "m")
+      .utc()
+      .format(),
+      stops: stops
+    };
+    return realtimeLeg;
   }
 }

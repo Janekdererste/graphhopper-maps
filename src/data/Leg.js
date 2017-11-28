@@ -2,8 +2,14 @@ export default class Leg {
   get departureTime() {
     return this._departureTime;
   }
+  get plannedDepartureTime() {
+    return this._plannedDepartureTime;
+  }
   get arrivalTime() {
     return this._arrivalTime;
+  }
+  get plannedArrivalTime() {
+    return this._plannedArrivalTime;
   }
   get departureLocation() {
     return this._departureLocation;
@@ -29,7 +35,9 @@ export default class Leg {
 
   constructor(apiLeg) {
     this._departureTime = apiLeg.departureTime;
+    this._plannedDepartureTime = this._departureTime;
     this._arrivalTime = apiLeg.arrivalTime;
+    this._plannedArrivalTime = this._arrivalTime;
     this._geometry = apiLeg.geometry;
     this._type = apiLeg.type;
     this._distance = apiLeg.distance;

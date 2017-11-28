@@ -58,27 +58,22 @@ export default class RealtimePath {
   _initializeLegs(apiPath) {
     this._legs = apiPath.legs.map(apiLeg => {
       let realtimeLeg = null;
-      if (apiLeg.isDelayed) {
-        realtimeLeg = this._createDummyRealtimeLeg(apiLeg);
-      }
-      return this._initializeLeg(apiLeg, realtimeLeg);
+      return this._initializeLeg(apiLeg);
     });
   }
 
-  _initializeLeg(apiLeg, realtimeLeg) {
+  _initializeLeg(apiLeg) {
     switch (apiLeg.type) {
       case LegType.WALK:
         return new WalkLeg(apiLeg);
       case LegType.PT:
-        return new PtLeg(apiLeg, realtimeLeg);
+        return new PtLeg(apiLeg);
       default:
         throw new Error("leg type: " + apiLeg.type + " not yet implemented");
     }
   }
 
-  _createDummyRealtimeLeg(apiLeg) {
-    return apiLeg;
-  }
+ 
 
   static createFromAPIPath(apiPath) {
     return new RealtimePath(apiPath);
