@@ -10,7 +10,7 @@ const ARRIVE_BY = "arrive_by";
 const MAX_WALK_DIST = "pt.max_walk_distance_per_leg";
 const LIMIT_SOLUTIONS = "pt.limit_solutions";
 
-const createQuery = search => {
+const CreateQuery = search => {
   let url = new URL(QUERY_PATH, window.location.origin);
 
   function pointParameter(point) {
@@ -30,7 +30,7 @@ const createQuery = search => {
       .format();
     url.searchParams.append(DEPARTURE_TIME, time);
 
-    if (search.timeOption == TimeOption.ARRIVAL) {
+    if (search.timeOption === TimeOption.ARRIVAL) {
       url.searchParams.append(ARRIVE_BY, true);
     } else {
       url.searchParams.append(ARRIVE_BY, false);
@@ -65,7 +65,7 @@ const createQuery = search => {
   return url.pathname + url.search;
 };
 
-const parseQuery = (search, searchParams) => {
+const ParseQuery = (search, searchParams) => {
   function parsePoints(searchParams) {
     const points = searchParams.getAll(POINT);
     if (points.length == 2) {
@@ -103,4 +103,4 @@ const parseQuery = (search, searchParams) => {
   return search;
 };
 
-export { createQuery, parseQuery };
+export { CreateQuery, ParseQuery };

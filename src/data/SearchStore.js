@@ -1,5 +1,5 @@
 import Store from "./Store.js";
-import { parseQuery } from "./Query.js";
+import { ParseQuery } from "./Query.js";
 import Point from "./Point.js";
 import moment from "moment";
 
@@ -78,7 +78,7 @@ export default class SearchStore extends Store {
 
   _reduceSearchParams(state, searchParams) {
     let newState = Object.assign({}, state);
-    return parseQuery(newState, searchParams);
+    return ParseQuery(newState, searchParams);
   }
 }
 
