@@ -58,19 +58,22 @@ export default class SearchStore extends Store {
     if (departure.isValid()) {
       departure.year(state.departureDateTime.year());
       departure.month(state.departureDateTime.month());
-      departure.day(state.departureDateTime.day());
+      departure.date(state.departureDateTime.date());
       result = Object.assign({}, state, { departureDateTime: departure });
     }
-
     return result;
   }
 
   _reduceDepartureDate(state, date) {
+    let result = state;
     let departure = moment.utc(date, "YYYY-MM-DD");
 
-    departure.hour(state.departureDateTime.hour());
-    departure.minute(state.departureDateTime.minute());
-    return Object.assign({}, state, { departureDateTime: departure });
+    if (departure.isValid()) {
+      departure.hour(state.departureDateTime.hour());
+      departure.minute(state.departureDateTime.minute());
+      result = Object.assign({}, state, { departureDateTime: departure });
+    }
+    return result;
   }
 
   _reduceSearchParams(state, searchParams) {
