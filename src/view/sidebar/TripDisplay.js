@@ -2,7 +2,8 @@ import React from "react";
 import moment from "moment";
 import Dispatcher from "../../data/Dispatcher.js";
 import { RouteActionType } from "../../data/RouteStore.js";
-import { Leg } from "./Leg.js";
+import { LegType } from "../../data/Leg.js";
+import { Leg, PtLeg, WalkLeg } from "./Leg.js";
 import { Waypoint, LegDescription } from "./TripElement.js";
 import styles from "./TripDisplay.css";
 
@@ -38,7 +39,8 @@ const Trip = ({ trip, selectedIndex, index }) => {
             Dispatcher.dispatch({
               type: RouteActionType.SELECTED_ROUTE_INDEX,
               value: index
-            })}
+            })
+          }
         >
           <TripHeader trip={trip} />
         </button>
@@ -66,7 +68,16 @@ const TripDetails = ({ trip }) => {
   return (
     <div className={styles.tripDetails}>
       {trip.legs.map((leg, i) => {
-        return <Leg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />;
+        switch (leg.type) {
+          case LegType.PT:
+            return (
+              <PtLeg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />
+            );
+          default:
+            return (
+              <Leg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />
+            );
+        }
       })}
     </div>
   );

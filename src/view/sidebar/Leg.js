@@ -1,6 +1,8 @@
 import React from "react";
 import moment from "moment";
 import { Waypoint, LegDescription, StopOnLeg, Turn } from "./TripElement.js";
+import { LegType } from "../../data/Leg.js";
+import styles from "./Leg.css";
 
 class Leg extends React.Component {
   constructor(props) {
@@ -23,38 +25,43 @@ class Leg extends React.Component {
     this.setState({ isCollapsed: !this.state.isCollapsed });
   }
 
-  _createLegDetails() {
+  renderFirstWaypoint() {
     const { leg } = this.props;
-    let creator = this._createTurn;
-    if (leg.type === "pt") creator = this._createStopOnLeg;
-
-    return <div>{leg.legDetails.map(detail => creator(detail))}</div>;
+    return (
+      <Waypoint
+        time={moment(leg.departureTime).format("HH:mm")}
+        name={leg.departureLocation}
+      />
+    );
   }
 
-  _createStopOnLeg(detail) {
-    if (detail.additional) {
-      return (
-        <StopOnLeg
-          time={moment(detail.additional).format("HH:mm")}
-          name={detail.main}
-        />
-      );
-    }
-    return "";
+  renderLastWaypoint() {
+    const { leg } = this.props;
+    return (
+      <Waypoint
+        time={moment(leg.arrivalTime).format("HH:mm")}
+        name={leg.arrivalLocation}
+        isLastLeg={true}
+      />
+    );
   }
 
-  _createTurn(detail) {
-    return <Turn sign={detail.additional} text={detail.main} />;
+  renderLegDetails() {
+    const { leg } = this.props;
+    return (
+      <div>
+        {leg.legDetails.map((detail, i) => {
+          return <Turn sign={detail.additional} text={detail.main} key={i} />;
+        })}
+      </div>
+    );
   }
 
   render() {
     const { leg, onClick, isLastLeg } = this.props;
     return (
       <div>
-        <Waypoint
-          time={moment(leg.departureTime).format("HH:mm")}
-          name={leg.departureLocation}
-        />
+        {this.renderFirstWaypoint()}
         <LegDescription
           type={leg.type}
           onClick={() => this._handleLegDescriptionClicked()}
@@ -66,19 +73,57 @@ class Leg extends React.Component {
             <span>{leg.distance}</span>
           </div>
         </LegDescription>
-        {!this.state.isCollapsed ? this._createLegDetails() : ""}
-        {isLastLeg ? (
-          <Waypoint
-            time={moment(leg.arrivalTime).format("HH:mm")}
-            name={leg.arrivalLocation}
-            isLastLeg={true}
-          />
-        ) : (
-          ""
-        )}
+        {!this.state.isCollapsed ? this.renderLegDetails() : ""}
+        {isLastLeg ? this.renderLastWaypoint() : ""}
       </div>
     );
   }
 }
 
-export { Leg };
+class PtLeg extends Leg {
+  constructor(props) {
+    super(props);
+  }
+
+  renderFirstWaypoint() {
+    const { leg } = this.props;
+    let time, className;
+
+    if (leg.isDelayed) {
+      className = styles.waypointTimeDelayed;
+      time = leg.departureTime;
+    } else {
+      className = styles.waypointTime;
+      time = leg.arrivalTime;
+    }
+    return (
+      <Waypoint
+        time={moment(time).format("HH:mm")}
+        timeClassName={className}
+        name={leg.departureLocation}
+      />
+    );
+  }
+
+  renderLegDetails() {
+    const { leg } = this.props;
+    return (
+      <div>
+        {leg.legDetails.map((detail, i) => {
+          if (detail.additional) {
+            return <StopOnLeg detail={detail} key={i} />;
+          }
+          return "";
+        })}
+      </div>
+    );
+  }
+}
+
+class WalkLeg extends Leg {
+  constructor(props) {
+    super(props);
+  }
+}
+
+export { Leg, PtLeg, WalkLeg };
