@@ -19,7 +19,7 @@ const Turn = ({ sign, text }) => {
       isLastElement={false}
       decorationType={TripElementDecorationType.NONE}
     >
-      <span>{sign}</span>
+      <span />
       <span>{text}</span>
     </TripElement>
   );

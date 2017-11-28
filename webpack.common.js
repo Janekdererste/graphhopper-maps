@@ -80,7 +80,11 @@ module.exports = {
         test: /\.png/,
         //include: path.resolve(__dirname, "node_modules/leaflet/"),
         loader: "file-loader"
-      }
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader'
+    }
     ]
   },
   plugins: [
