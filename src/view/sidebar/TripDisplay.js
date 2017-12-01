@@ -5,6 +5,7 @@ import { RouteActionType } from "../../data/RouteStore.js";
 import { LegType } from "../../data/Leg.js";
 import { Leg, PtLeg, WalkLeg } from "./Leg.js";
 import { Waypoint, LegDescription } from "./TripElement.js";
+import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripDisplay.css";
 
 export default ({ trips }) => {
@@ -59,7 +60,7 @@ const TripHeader = ({ trip }) => {
         </span>
         <span>{getDuration(trip.departureTime, trip.arrivalTime)} min</span>
       </div>
-      <span>Transfers {trip.transfers}</span>
+      <SecondaryText>Transfers {trip.transfers}</SecondaryText>
     </div>
   );
 };

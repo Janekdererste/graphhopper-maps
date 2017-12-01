@@ -1,6 +1,13 @@
 import React from "react";
 import moment from "moment";
 import { SearchActionType, TimeOption } from "../../data/SearchStore.js";
+import SecondaryText from "../components/SecondaryText.js";
+import {
+  TextInput,
+  TimeInput,
+  DateInput,
+  Select
+} from "../components/Inputs.js";
 import styles from "./SearchInput.css";
 
 export default ({ search, onSearchChange }) => {
@@ -33,62 +40,37 @@ const LocationInput = ({ search, onChange }) => {
 };
 
 const TimeSelect = ({ onChange, search }) => {
+  const options = [
+    { value: TimeOption.NOW, label: "Leave Now" },
+    { value: TimeOption.DEPARTURE, label: "Departure at" },
+    { value: TimeOption.ARRIVAL, label: "Arrival at" }
+  ];
   return (
     <div className={styles.timeSelect}>
-      <div className={styles.locationInputField}>
-        <label>Time</label>
-        <select
-          value={search.timeOption}
-          onChange={e =>
-            onChange({
-              type: SearchActionType.TIME_OPTION,
-              value: e.target.value
-            })}
-        >
-          <option value={TimeOption.NOW}>Leave Now</option>
-          <option value={TimeOption.DEPARTURE}>Departure at</option>
-          <option value={TimeOption.ARRIVAL}>Arrival at</option>
-        </select>
-      </div>
+      <Select
+        value={search.timeOption}
+        label={"Time"}
+        options={options}
+        onChange={onChange}
+        actionType={SearchActionType.TIME_OPTION}
+      />
       {search.timeOption != TimeOption.NOW ? (
-        <div>
-          <TimeInput onChange={onChange} search={search} />
-          <DateInput onChange={onChange} search={search} />
+        <div className={styles.dateTimeContainer}>
+          <TimeInput
+            value={search.departureDateTime.format("HH:mm")}
+            onChange={onChange}
+            actionType={SearchActionType.DEPARTURE_TIME}
+          />
+          <DateInput
+            value={search.departureDateTime.format("YYYY-MM-DD")}
+            onChange={onChange}
+            actionType={SearchActionType.DEPARTURE_DATE}
+          />
         </div>
       ) : (
         ""
       )}
     </div>
-  );
-};
-
-const TimeInput = ({ onChange, search }) => {
-  return (
-    <input
-      type="time"
-      className={styles.timeInput}
-      value={search.departureDateTime.format("HH:mm")}
-      onChange={e =>
-        onChange({
-          type: SearchActionType.DEPARTURE_TIME,
-          value: e.target.value
-        })}
-    />
-  );
-};
-
-const DateInput = ({ onChange, search }) => {
-  return (
-    <input
-      className={styles.timeInput}
-      type="date"
-      value={search.departureDateTime.format("YYYY-MM-DD")}
-      onChange={e =>
-        onChange({
-          type: SearchActionType.DEPARTURE_DATE,
-          value: e.target.value
-        })}
-    />
   );
 };
 
@@ -101,7 +83,8 @@ const Options = ({ search, onChange }) => {
           onChange({
             type: SearchActionType.IS_SHOWING_OPTIONS,
             value: !search.isShowingOptions
-          })}
+          })
+        }
       >
         Options
       </button>
@@ -123,19 +106,6 @@ const Options = ({ search, onChange }) => {
       ) : (
         ""
       )}
-    </div>
-  );
-};
-
-const TextInput = ({ value, label, actionType, onChange }) => {
-  return (
-    <div className={styles.locationInputField}>
-      <label>{label}</label>
-      <input
-        type="text"
-        value={value}
-        onChange={e => onChange({ type: actionType, value: e.target.value })}
-      />
     </div>
   );
 };
