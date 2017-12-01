@@ -17,6 +17,7 @@
   text-align: inherit;
   font-size: inherit;
   transition-duration: 0.2s;
+  cursor: pointer;
 }
 
 .tripToggle:hover {

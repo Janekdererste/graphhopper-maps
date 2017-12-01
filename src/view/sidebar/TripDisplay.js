@@ -55,12 +55,14 @@ const TripHeader = ({ trip }) => {
     <div className={styles.tripHeader}>
       <div className={styles.tripTime}>
         <span>
-          {moment(trip.departureTime).format("HH:mm")} -{" "}
+          {moment(trip.departureTime).format("HH:mm")} &ndash;{" "}
           {moment(trip.arrivalTime).format("HH:mm")}
         </span>
         <span>{getDuration(trip.departureTime, trip.arrivalTime)} min</span>
       </div>
-      <SecondaryText>Transfers {trip.transfers}</SecondaryText>
+      <SecondaryText>
+        Transfers: {trip.transfers} &ndash; {trip.fare}{" "}
+      </SecondaryText>
     </div>
   );
 };

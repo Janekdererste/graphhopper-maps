@@ -4,6 +4,7 @@ import { Waypoint, LegDescription, StopOnLeg, Turn } from "./TripElement.js";
 import { LegType } from "../../data/Leg.js";
 import IconPt from "../img/bus.png";
 import IconWalk from "../img/foot.png";
+import Arrow from "../img/arrow.svg";
 import styles from "./Leg.css";
 
 class Leg extends React.Component {
@@ -72,11 +73,20 @@ class Leg extends React.Component {
           icon={this.getLegIcon()}
           onClick={() => this._handleLegDescriptionClicked()}
         >
-          <div>
+          <div className={styles.legDescriptionDetails}>
             <span>
-              {this._calculateDuration(leg.departureTime, leg.arrivalTime)} min,{" "}
+              {this._calculateDuration(leg.departureTime, leg.arrivalTime)}{" "}
+              min,&nbsp;
             </span>
             <span>{leg.distance}</span>
+            <div
+              dangerouslySetInnerHTML={{ __html: Arrow }}
+              className={
+                this.state.isCollapsed
+                  ? styles.carrotContainer
+                  : styles.carrotContainerFlipped
+              }
+            />
           </div>
         </LegDescription>
         {!this.state.isCollapsed ? this.renderLegDetails() : ""}
