@@ -9,7 +9,6 @@
 .legDescriptionDetails {
   display: flex;
   flex-direction: row;
-  cursor: pointer;
 }
 
 .carrotContainer {

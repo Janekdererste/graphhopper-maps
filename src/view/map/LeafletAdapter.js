@@ -1,5 +1,6 @@
-import Leaflet from "leaflet";
+import Leaflet, { latLng } from "leaflet";
 import Dispatcher from "../../data/Dispatcher.js";
+import circleIcon from "./circle.png";
 
 export default class LeafletAdapter {
   constructor(mapDOMElement) {
@@ -25,18 +26,27 @@ export default class LeafletAdapter {
   }
 
   _initializeRouteLayer() {
-    this.unselectedLayer = this._createGeoJsonLayer(f =>
-      this._getUnselectedStyle(f)
+    this.unselectedLayer = this._createGeoJsonLayer(
+      f => this._getUnselectedStyle(f),
+      (f, latLng) => null
     );
-    this.selectedLayer = this._createGeoJsonLayer(f =>
-      this._getSelectedStyle(f)
+
+    this.selectedLayer = this._createGeoJsonLayer(
+      f => this._getSelectedStyle(f),
+      (f, latLng) =>
+        this._getCircleMarker({
+          latLng: latLng,
+          undefined,
+          iconUrl: circleIcon,
+          iconSize: 10
+        })
     );
   }
 
-  _createGeoJsonLayer(style) {
+  _createGeoJsonLayer(style, marker) {
     return Leaflet.geoJSON(undefined, {
       style: style,
-      pointToLayer: (f, latLng) => Leaflet.circleMarker(latLng, { fill: true })
+      pointToLayer: marker
     }).addTo(this.map);
   }
 
@@ -59,29 +69,39 @@ export default class LeafletAdapter {
     this._markers = [];
 
     locations.forEach(location => {
-      let marker = Leaflet.marker(location.coords, {
-        draggable: true
-      });
-      marker.on("dragend", e => {
-        Dispatcher.dispatch({
-          type: location.actionType,
-          value: [e.target._latlng.lat, e.target._latlng.lng]
-        });
-      });
-
-      if (location.icon) {
-        let icon = Leaflet.icon({
-          iconUrl: location.icon,
-          iconAnchor: [10, 10],
-          iconSize: [20, 20]
-        });
-        marker.setIcon(icon);
-      }
+      const props = {
+        latLng: location.coords,
+        iconUrl: location.icon,
+        iconSize: 20,
+        onDragEnd: latLng =>
+          Dispatcher.dispatch({
+            type: location.actionType,
+            value: [latLng.lat, latLng.lng]
+          })
+      };
+      let marker = this._getCircleMarker(props);
       marker.addTo(this.map);
       this._markers.push(marker);
     });
     const group = Leaflet.featureGroup(this._markers);
-    this.map.fitBounds(group.getBounds().pad(0.1));
+  }
+
+  _getCircleMarker({ latLng, onDragEnd, iconUrl, iconSize }) {
+    let marker = Leaflet.marker(latLng, { draggable: false });
+    if (onDragEnd) {
+      marker.options.draggable = true;
+      marker.on("dragend", e => onDragEnd(e.target._latlng));
+    }
+
+    if (iconUrl) {
+      let icon = Leaflet.icon({
+        iconUrl: iconUrl,
+        iconAnchor: [iconSize / 2, iconSize / 2],
+        iconSize: [iconSize, iconSize]
+      });
+      marker.setIcon(icon);
+    }
+    return marker;
   }
 
   setNewPaths(paths, selectedRouteIndex) {
@@ -98,7 +118,6 @@ export default class LeafletAdapter {
       }
     });
     this.selectedLayer.bringToFront();
-    this.map.fitBounds(this.selectedLayer.getBounds());
   }
 
   clearPaths() {
@@ -142,10 +161,10 @@ export default class LeafletAdapter {
     let style = this._getUnselectedStyle(feature);
     switch (feature.properties.type) {
       case "walk":
-        style.color = "#87edff";
+        style.color = "#01afaa";
         break;
       case "pt":
-        style.color = "#1eddff";
+        style.color = "#015eaf";
         break;
       default:
         style.color = "#87edff";
@@ -156,10 +175,8 @@ export default class LeafletAdapter {
 
   _getUnselectedStyle(feature) {
     return {
-      weight: 5,
-      color: "#858687",
-      fillOpacity: 1,
-      radius: 7
+      weight: 4,
+      color: "#858687"
     };
   }
 }
