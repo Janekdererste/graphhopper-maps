@@ -34,6 +34,12 @@
   margin: 1rem 0 1rem 1rem;
 }
 
+.legDescriptionIcon {
+  padding-top: 2px; /*better get fitting icons*/
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .tripDescriptionButton {
   background-color: transparent;
   width: 100%;

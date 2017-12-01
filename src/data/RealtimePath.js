@@ -73,8 +73,6 @@ export default class RealtimePath {
     }
   }
 
- 
-
   static createFromAPIPath(apiPath) {
     return new RealtimePath(apiPath);
   }

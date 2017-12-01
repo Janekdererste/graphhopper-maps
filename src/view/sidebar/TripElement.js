@@ -26,13 +26,13 @@ const Turn = ({ sign, text }) => {
   );
 };
 
-const LegDescription = ({ type, onClick, children }) => {
+const LegDescription = ({ icon, onClick, children }) => {
   return (
     <TripElement
       isLastElement={false}
       decorationType={TripElementDecorationType.NONE}
     >
-      <span>{type}</span>
+      <img src={icon} className={styles.legDescriptionIcon} />
       <div className={styles.legRowDescription}>
         <button
           onClick={e => onClick()}

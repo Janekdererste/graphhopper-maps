@@ -86,13 +86,13 @@ export default class PtLeg extends Leg {
     });
     const realtimeLeg = {
       departureTime: moment(apiLeg.departureTime)
-      .add(5, "m")
-      .utc()
-      .format(),
+        .add(5, "m")
+        .utc()
+        .format(),
       arrivalTime: moment(apiLeg.arrivalTime)
-      .add(5, "m")
-      .utc()
-      .format(),
+        .add(5, "m")
+        .utc()
+        .format(),
       stops: stops
     };
     return realtimeLeg;

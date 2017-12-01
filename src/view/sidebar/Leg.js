@@ -2,6 +2,8 @@ import React from "react";
 import moment from "moment";
 import { Waypoint, LegDescription, StopOnLeg, Turn } from "./TripElement.js";
 import { LegType } from "../../data/Leg.js";
+import IconPt from "../img/bus.png";
+import IconWalk from "../img/foot.png";
 import styles from "./Leg.css";
 
 class Leg extends React.Component {
@@ -57,13 +59,17 @@ class Leg extends React.Component {
     );
   }
 
+  getLegIcon() {
+    return IconWalk;
+  }
+
   render() {
     const { leg, onClick, isLastLeg } = this.props;
     return (
       <div>
         {this.renderFirstWaypoint()}
         <LegDescription
-          type={leg.type}
+          icon={this.getLegIcon()}
           onClick={() => this._handleLegDescriptionClicked()}
         >
           <div>
@@ -117,6 +123,10 @@ class PtLeg extends Leg {
         })}
       </div>
     );
+  }
+
+  getLegIcon() {
+    return IconPt;
   }
 }
 
