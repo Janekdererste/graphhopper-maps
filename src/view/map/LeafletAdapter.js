@@ -5,6 +5,7 @@ import circleIcon from "./circle.png";
 export default class LeafletAdapter {
   constructor(mapDOMElement) {
     this.map = Leaflet.map(mapDOMElement);
+    this.map.zoomControl.setPosition("topright");
     this._markers = [];
     this._initializeMap();
   }
