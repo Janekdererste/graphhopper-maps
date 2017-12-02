@@ -36,23 +36,11 @@ export default class RouteStore extends Store {
       case SearchActionType.LIMIT_SOLUTIONS:
       case SearchActionType.TIME_OPTION:
       case RouteActionType.REQUEST_PATH:
-        DataManager.queryRoute(CreateQuery(this.searchStore.getState()));
-        return Object.assign({}, state, {
-          isFetching: true,
-          selectedRouteIndex: 0
-        });
+        return this._requestPath(state);
       case DataManagerActionType.RECEIVED_ROUTE:
-        const paths = this.parseResult(action.value);
-        return Object.assign({}, state, {
-          paths: paths,
-          isLastQuerySuccess: true,
-          isFetching: false
-        });
+        return this._handleReceivedRoute(state, action);
       case DataManagerActionType.ROUTE_QUERY_ERROR:
-        return Object.assign({}, state, {
-          isFetching: false,
-          isLastQuerySuccess: false
-        });
+        return this._handleReceivedError(state);
       default:
         return state;
     }
@@ -67,7 +55,31 @@ export default class RouteStore extends Store {
     });
   }
 
-  parseResult(text) {
+  _requestPath(state) {
+    DataManager.queryRoute(CreateQuery(this.searchStore.getState()));
+    return Object.assign({}, state, {
+      isFetching: DataManager.isFetching(),
+      selectedRouteIndex: 0
+    });
+  }
+
+  _handleReceivedRoute(state, action) {
+    const paths = this._parseResult(action.value);
+    return Object.assign({}, state, {
+      paths: paths,
+      isLastQuerySuccess: true,
+      isFetching: DataManager.isFetching()
+    });
+  }
+
+  _handleReceivedError(state) {
+    return Object.assign({}, state, {
+      isFetching: DataManager.isFetching(),
+      isLastQuerySuccess: false
+    });
+  }
+
+  _parseResult(text) {
     let result = JSON.parse(text);
     console.log(result);
     return this._createPaths(result);

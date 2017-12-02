@@ -3,7 +3,15 @@ import Dispatcher from "./Dispatcher.js";
 
 const endpoint = "http://graphhopper-trimet.eu-central-1.elasticbeanstalk.com";
 
-export default {
+class DataManager {
+  constructor() {
+    this._requestCount = 0;
+  }
+
+  isFetching() {
+    return this._requestCount > 0;
+  }
+
   queryRoute(query) {
     const url = endpoint + query;
 
@@ -12,7 +20,7 @@ export default {
       DataManagerActionType.RECEIVED_ROUTE,
       DataManagerActionType.ROUTE_QUERY_ERROR
     );
-  },
+  }
 
   queryEndpointInfo(query) {
     const url = endpoint + query;
@@ -21,25 +29,31 @@ export default {
       DataManagerActionType.RECEIVED_INFO,
       DataManagerActionType.INFO_QUERY_ERROR
     );
-  },
+  }
 
   query(url, successActionType, errorActionType) {
     console.log(url);
+    this._requestCount++;
     Http.makeGETRequest(
       url,
-      text =>
+      text => {
+        this._requestCount--;
         Dispatcher.dispatch({
           type: successActionType,
           value: text
-        }),
-      error =>
+        });
+      },
+      error => {
+        this._requestCount--;
         Dispatcher.dispatch({
           type: errorActionType,
           value: error.message
-        })
+        });
+      }
     );
   }
-};
+}
+export default new DataManager();
 
 export const DataManagerActionType = {
   RECEIVED_ROUTE: "DataManagerActionType_RECEIVED_ROUTE",
