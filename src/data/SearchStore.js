@@ -1,5 +1,6 @@
 import Store from "./Store.js";
-import { ParseQuery } from "./Query.js";
+import { CreateQuery, ParseQuery } from "./Query.js";
+import DataManager from "./DataManager.js";
 import Point from "./Point.js";
 import moment from "moment";
 
@@ -18,37 +19,59 @@ export default class SearchStore extends Store {
   }
 
   reduce(state, action) {
+    let result = state;
+
     switch (action.type) {
+      case SearchActionType.IS_SHOWING_OPTIONS:
+        result = Object.assign({}, state, { isShowingOptions: action.value });
+        break;
       case SearchActionType.FROM:
-        return Object.assign({}, state, {
+        result = Object.assign({}, state, {
           from: Point.create(action.value)
         });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.TO:
-        return Object.assign({}, state, {
+        result = Object.assign({}, state, {
           to: Point.create(action.value)
         });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.WEIGHTING:
-        return Object.assign({}, state, { weighting: action.value });
+        result = Object.assign({}, state, { weighting: action.value });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.DEPARTURE_TIME:
-        return this._reduceDepartureTime(state, action.value);
+        result = this._reduceDepartureTime(state, action.value);
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.DEPARTURE_DATE:
-        return this._reduceDepartureDate(state, action.value);
+        result = this._reduceDepartureDate(state, action.value);
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.MAX_WALK_DISTANCE:
-        return Object.assign({}, state, { maxWalkDistance: action.value });
+        result = Object.assign({}, state, { maxWalkDistance: action.value });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.LIMIT_SOLUTIONS:
-        return Object.assign({}, state, { limitSolutions: action.value });
+        result = Object.assign({}, state, { limitSolutions: action.value });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.SEARCH_URL_CHANGED:
-        return this._reduceSearchParams(state, action.value);
+        result = this._reduceSearchParams(state, action.value);
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       case SearchActionType.TIME_OPTION:
-        return Object.assign({}, state, {
+        result = Object.assign({}, state, {
           timeOption: action.value,
           departureDateTime: new moment()
         });
-      case SearchActionType.IS_SHOWING_OPTIONS:
-        return Object.assign({}, state, { isShowingOptions: action.value });
+        DataManager.queryRoute(CreateQuery(result));
+        break;
       default:
-        return state;
+        break;
     }
+    return result;
   }
 
   _reduceDepartureTime(state, time) {

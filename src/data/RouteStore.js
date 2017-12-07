@@ -2,12 +2,10 @@ import DataManager, { DataManagerActionType } from "./DataManager.js";
 import { CreateQuery } from "./Query.js";
 import RealtimePath from "./RealtimePath.js";
 import Store from "./Store.js";
-import SearchStore, { TimeOption, SearchActionType } from "./SearchStore.js";
 
 export default class RouteStore extends Store {
-  constructor(dispatcher, searchStore) {
+  constructor(dispatcher) {
     super(dispatcher);
-    this.searchStore = searchStore;
   }
 
   getInitialState() {
@@ -27,16 +25,11 @@ export default class RouteStore extends Store {
         });
       case RouteActionType.SELECTED_ROUTE_INDEX:
         return this._selectRoute(state, action.value);
-      case SearchActionType.FROM:
-      case SearchActionType.TO:
-      case SearchActionType.WEIGHTING:
-      case SearchActionType.DEPARTURE_TIME:
-      case SearchActionType.DEPARTURE_DATE:
-      case SearchActionType.MAX_WALK_DISTANCE:
-      case SearchActionType.LIMIT_SOLUTIONS:
-      case SearchActionType.TIME_OPTION:
-      case RouteActionType.REQUEST_PATH:
-        return this._requestPath(state);
+      case DataManagerActionType.QUERY_DATA:
+        return Object.assign({}, state, {
+          isFetching: DataManager.isFetching(),
+          selectedRouteIndex: 0
+        });
       case DataManagerActionType.RECEIVED_ROUTE:
         return this._handleReceivedRoute(state, action);
       case DataManagerActionType.ROUTE_QUERY_ERROR:
@@ -52,14 +45,6 @@ export default class RouteStore extends Store {
     oldState.paths[newSelectedRouteIndex].isSelected = true;
     return Object.assign({}, oldState, {
       selectedRouteIndex: newSelectedRouteIndex
-    });
-  }
-
-  _requestPath(state) {
-    DataManager.queryRoute(CreateQuery(this.searchStore.getState()));
-    return Object.assign({}, state, {
-      isFetching: DataManager.isFetching(),
-      selectedRouteIndex: 0
     });
   }
 

@@ -34,6 +34,7 @@ class DataManager {
   query(url, successActionType, errorActionType) {
     console.log(url);
     this._requestCount++;
+    Dispatcher.dispatch({ type: DataManagerActionType.QUERY_DATA });
     Http.makeGETRequest(
       url,
       text => {
@@ -56,6 +57,7 @@ class DataManager {
 export default new DataManager();
 
 export const DataManagerActionType = {
+  QUERY_DATA: "DataManagerActionType_QUERY_DATA",
   RECEIVED_ROUTE: "DataManagerActionType_RECEIVED_ROUTE",
   RECEIVED_INFO: "DataManagerActoinType_RECEIVED_INFO",
   ROUTE_QUERY_ERROR: "DataManagerActionType_ROUTE_QUERY_ERROR",
