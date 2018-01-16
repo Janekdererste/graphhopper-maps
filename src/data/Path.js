@@ -6,7 +6,7 @@ import { LegMode } from "./Leg.js";
 import Waypoint from "./Waypoint.js";
 
 export default class Path {
-  get transfers() {
+  get waypoints() {
     return this._waypoints;
   }
 
@@ -55,8 +55,8 @@ export default class Path {
 
   _initializeSimpleValues(apiPath) {
     this._isSelected = false;
-    this._departureTime = apiPath.departureTime;
-    this._arrivalTime = apiPath.arrivalTime;
+    this._departureTime = apiPath.legs[0].departureTime;
+    this._arrivalTime = apiPath.legs[apiPath.legs.length - 1].arrivalTime;
     this._fare = apiPath.fare;
   }
 
@@ -67,10 +67,10 @@ export default class Path {
     apiPath.legs.forEach((apiLeg, i) => {
       this.legs.push(this._initializeLeg(apiLeg));
       if (i > 0)
-        this._waypoints.push(new Waypoint(apiLeg, apiPath.legs[i - 1]));
-      else if (i === apiPath.legs.length - 1)
-        this.transfers.push(new Waypoint(apiLeg, null));
+        this._waypoints.push(new Waypoint(apiPath.legs[i - 1], apiLeg));
       else this._waypoints.push(new Waypoint(null, apiLeg));
+      if (i === apiPath.legs.length - 1)
+        this.waypoints.push(new Waypoint(apiLeg, null));
     });
   }
 

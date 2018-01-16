@@ -120,7 +120,7 @@ export default class Waypoint {
     ) {
       let arrivalTime =
         prevApiLeg.stops[prevApiLeg.stops.length - 1].arrivalTime;
-      let departureTime = nextApiLeg.stops[0].arrivalTime;
+      let departureTime = nextApiLeg.stops[0].departureTime;
       let buffer = moment(departureTime).diff(moment(arrivalTime));
       this._isPossible = buffer >= 0;
     }
