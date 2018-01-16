@@ -132,12 +132,12 @@ export default class LeafletAdapter {
       features.push(this._createFeatureFromGeometry(leg.type, leg.geometry));
       if (leg.type === "pt") {
         features.push(
-          this._createFeatureFromGeometry(leg.type, leg.legDetails[0].geometry)
+          this._createFeatureFromGeometry(leg.type, leg.turns[0].geometry)
         );
         features.push(
           this._createFeatureFromGeometry(
             leg.type,
-            leg.legDetails[leg.legDetails.length - 1].geometry
+            leg.turns[leg.turns.length - 1].geometry
           )
         );
       }
