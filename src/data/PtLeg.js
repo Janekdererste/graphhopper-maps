@@ -1,4 +1,4 @@
-import Leg from "./Leg.js";
+import Leg, { LegMode } from "./Leg.js";
 
 //import moments only for the dummy Realtime leg
 import moment from "moment";
@@ -9,7 +9,7 @@ export default class PtLeg extends Leg {
   }
 
   constructor(apiLeg) {
-    super(apiLeg);
+    super(apiLeg, LegMode.PT);
 
     //create a delayed leg from time to time
     if (Math.random() < 0.5) {
@@ -17,26 +17,29 @@ export default class PtLeg extends Leg {
     }
   }
 
-  initializeDepartureLocation(apiLeg) {
-    return this._findLocation(apiLeg, false);
-  }
-
-  initialzeArrivalLocation(apiLeg) {
-    return this._findLocation(apiLeg, true);
-  }
-
-  initializeLegDetails(apiLeg) {
+  initializeTurns(apiLeg) {
     return apiLeg.stops.map(stop => {
       return {
-        main: stop.stop_name,
-        additional: stop.departureTime,
+        name: stop.stop_name,
+        departureTime: stop.plannedDepartureTime,
+        delay: this._calculateDelay(
+          stop.departureTime,
+          stop.plannedDepartureTime
+        ),
         geometry: stop.geometry
       };
     });
   }
 
-  initializeLegDistance(apiLeg) {
+  initializeDistance(apiLeg) {
     return apiLeg.stops.length + " Stops";
+  }
+
+  _calculateDelay(actual, planned) {
+    let actualTime = moment(actual);
+    let plannedTime = moment(planned);
+    let diff = actualTime.diff(plannedTime, "minutes");
+    return diff;
   }
 
   _initializeRealtime(realtimeLeg) {
@@ -46,11 +49,11 @@ export default class PtLeg extends Leg {
     this._isDelayed = true;
     this._departureTime = realtimeLeg.departureTime;
     this._arrivalTime = realtimeLeg.arrivalTime;
-    this._legDetails = this.legDetails.map((plannedStop, i) => {
+    this._legDetails = this.turns.map((plannedStop, i) => {
       if (i < realtimeLeg.stops.length) {
         const realtimeStop = realtimeLeg.stops[i];
-        if (plannedStop.main === realtimeStop.stop_name) {
-          plannedStop.realtime = realtimeStop.departureTime;
+        if (plannedStop.name === realtimeStop.stop_name) {
+          plannedStop.delay = 5;
         } else {
           throw Error(
             "PtLeg: realtime leg and planned leg must have same stop order."
@@ -78,10 +81,11 @@ export default class PtLeg extends Leg {
     const stops = apiLeg.stops.map(stop => {
       return {
         stop_name: stop.stop_name,
-        departureTime: moment(stop.departureTime)
+        departureTime: moment(stop.plannedDepartureTime)
           .add(5, "m")
           .utc()
-          .format()
+          .format(),
+        plannedDepartureTime: stop.plannedDepartureTime
       };
     });
     const realtimeLeg = {

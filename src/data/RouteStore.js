@@ -1,6 +1,6 @@
 import DataManager, { DataManagerActionType } from "./DataManager.js";
 import { CreateQuery } from "./Query.js";
-import RealtimePath from "./RealtimePath.js";
+import Path from "./Path.js";
 import Store from "./Store.js";
 
 export default class RouteStore extends Store {
@@ -71,7 +71,7 @@ export default class RouteStore extends Store {
   }
 
   _createPaths(result) {
-    let paths = result.paths.map(path => RealtimePath.createFromAPIPath(path));
+    let paths = result.paths.map(path => new Path(path));
     paths[this.getState().selectedRouteIndex].isSelected = true;
     return paths;
   }
