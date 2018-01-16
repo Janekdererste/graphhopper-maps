@@ -1,16 +1,71 @@
 import React from "react";
 import moment from "moment";
+import { WaypointType } from "../../data/Waypoint.js";
+import { LegMode } from "../../data/Leg.js";
+
+import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripElement.css";
 
-const Waypoint = ({ time, timeClassName = "", name, isLastLeg = false }) => {
+const Waypoint = ({ waypoint }) => {
+  function getTime(waypoint) {
+    let time;
+    if (waypoint.type === WaypointType.LAST) {
+      time = waypoint.arrivalTime;
+    } else {
+      time = waypoint.departureTime;
+    }
+
+    return moment(time).format("HH:mm");
+  }
+
+  function getDelay(waypoint) {
+    return waypoint.departureDelay !== 0 && waypoint.nextMode !== LegMode.WALK
+      ? " +" + waypoint.departureDelay
+      : "";
+  }
+
+  function getArrivalTime(waypoint) {
+    return waypoint.type === WaypointType.INBEETWEEN &&
+      waypoint.prevMode === LegMode.PT ? (
+      <div>
+        <SecondaryText>
+          {moment(waypoint.arrivalTime).format("HH:mm")}
+        </SecondaryText>
+        <SecondaryText> {getArrivalDelay(waypoint)}</SecondaryText>
+      </div>
+    ) : (
+      ""
+    );
+  }
+
+  function getArrivalDelay(waypoint) {
+    if (
+      waypoint.type === WaypointType.INBEETWEEN &&
+      waypoint.prevMode === LegMode.PT &&
+      waypoint.arrivalDelay !== 0
+    ) {
+      return " +" + waypoint.arrivalDelay;
+    }
+    return "";
+  }
+
   return (
-    <TripElement
-      isLastElement={isLastLeg}
-      decorationType={TripElementDecorationType.WAYPOINT}
-    >
-      <span className={timeClassName}>{time}</span>
-      <span className={styles.waypointName}>{name}</span>
-    </TripElement>
+    <div>
+      <TripElement decorationType={TripElementDecorationType.NONE}>
+        <div>{getArrivalTime(waypoint)}</div>
+        <span />
+      </TripElement>
+      <TripElement
+        isLastElement={waypoint.type === WaypointType.LAST}
+        decorationType={TripElementDecorationType.WAYPOINT}
+      >
+        <div>
+          <span>{getTime(waypoint)} </span>
+          <span>{getDelay(waypoint)}</span>
+        </div>
+        <span className={styles.waypointName}>{waypoint.name}</span>
+      </TripElement>
+    </div>
   );
 };
 
@@ -45,14 +100,18 @@ const LegDescription = ({ icon, onClick, children }) => {
   );
 };
 
-const StopOnLeg = ({ detail }) => {
-  let time, className;
-  if (detail.realtime) {
-    time = moment(detail.realtime).format("HH:mm");
-    className = styles.stopOnLegDelayedTime;
-  } else {
-    time = moment(detail.additional).format("HH:mm");
-    className = styles.stopOnLegTime;
+const StopOnLeg = ({ stop }) => {
+  function createDepartureTime(stop) {
+    return (
+      <div>
+        <span>{moment(stop.departureTime).format("HH:mm")}</span>
+        {stop.delay > 0 ? (
+          <span className={styles.delay}> +{stop.delay}</span>
+        ) : (
+          ""
+        )}
+      </div>
+    );
   }
 
   return (
@@ -60,8 +119,8 @@ const StopOnLeg = ({ detail }) => {
       isLastElement={false}
       decorationType={TripElementDecorationType.STOP_ON_LEG}
     >
-      <span className={className}>{time}</span>
-      <span>{detail.main}</span>
+      {createDepartureTime(stop)}
+      <span>{stop.name}</span>
     </TripElement>
   );
 };
@@ -69,15 +128,6 @@ const StopOnLeg = ({ detail }) => {
 class TripElement extends React.Component {
   constructor(props) {
     super(props);
-    this._validateProps(props);
-  }
-
-  _validateProps(props) {
-    if (!props.children && props.children.length != 2) {
-      throw Error(
-        "TripElement requires two child elements 0=leftColumn, 1=Description (e.g. Stop name"
-      );
-    }
   }
 
   render() {

@@ -2,9 +2,10 @@ import React from "react";
 import moment from "moment";
 import Dispatcher from "../../data/Dispatcher.js";
 import { RouteActionType } from "../../data/RouteStore.js";
-import { LegType } from "../../data/Leg.js";
+import { LegMode } from "../../data/Leg.js";
+import { WaypointType } from "../../data/Waypoint.js";
 import { Leg, PtLeg, WalkLeg } from "./Leg.js";
-import { Waypoint, LegDescription } from "./TripElement.js";
+import { Waypoint, LegDescription, Transfer } from "./TripElement.js";
 import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripDisplay.css";
 
@@ -61,27 +62,33 @@ const TripHeader = ({ trip }) => {
         <span>{getDuration(trip.departureTime, trip.arrivalTime)} min</span>
       </div>
       <SecondaryText>
-        Transfers: {trip.transfers} &ndash; {trip.fare}{" "}
+        Transfers: {trip.waypoints.length - 2} &ndash; {trip.fare}{" "}
       </SecondaryText>
     </div>
   );
 };
 
 const TripDetails = ({ trip }) => {
+  function getLeg(leg) {
+    switch (leg.type) {
+      case LegMode.PT:
+        return <PtLeg leg={leg} isLastLeg={false} />;
+      default:
+        return <Leg leg={leg} isLastLeg={false} />;
+    }
+  }
+
   return (
     <div className={styles.tripDetails}>
       {trip.legs.map((leg, i) => {
-        switch (leg.type) {
-          case LegType.PT:
-            return (
-              <PtLeg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />
-            );
-          default:
-            return (
-              <Leg leg={leg} isLastLeg={i === trip.legs.length - 1} key={i} />
-            );
-        }
+        return (
+          <div key={i}>
+            <Waypoint waypoint={trip.waypoints[i]} />
+            {getLeg(leg)}
+          </div>
+        );
       })}
+      <Waypoint waypoint={trip.waypoints[trip.waypoints.length - 1]} />
     </div>
   );
 };

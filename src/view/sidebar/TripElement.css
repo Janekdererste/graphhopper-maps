@@ -4,10 +4,6 @@
   align-content: stretch;
 }
 
-.tripElement:last-child .tripElementDetails {
-  margin-bottom: 1rem;
-}
-
 .tripElement:last-child .tripElementLeftColumn {
   margin-bottom: 1rem;
 }
@@ -99,4 +95,8 @@
   align-items: center;
   width: 8px;
   flex: 0 0 auto;
+}
+
+.delay {
+  color: rgb(249, 119, 119);
 }

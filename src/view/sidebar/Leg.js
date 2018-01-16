@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { Waypoint, LegDescription, StopOnLeg, Turn } from "./TripElement.js";
-import { LegType } from "../../data/Leg.js";
+import { LegMode } from "../../data/Leg.js";
 import IconPt from "../img/bus.png";
 import IconWalk from "../img/foot.png";
 import Arrow from "../img/arrow.svg";
@@ -53,8 +53,8 @@ class Leg extends React.Component {
     const { leg } = this.props;
     return (
       <div>
-        {leg.legDetails.map((detail, i) => {
-          return <Turn sign={detail.additional} text={detail.main} key={i} />;
+        {leg.turns.map((turn, i) => {
+          return <Turn sign={turn.sign} text={turn.description} key={i} />;
         })}
       </div>
     );
@@ -68,7 +68,9 @@ class Leg extends React.Component {
     const { leg, onClick, isLastLeg } = this.props;
     return (
       <div>
-        {this.renderFirstWaypoint()}
+        {
+          //this.renderFirstWaypoint()}
+        }
         <LegDescription
           icon={this.getLegIcon()}
           onClick={() => this._handleLegDescriptionClicked()}
@@ -90,7 +92,9 @@ class Leg extends React.Component {
           </div>
         </LegDescription>
         {!this.state.isCollapsed ? this.renderLegDetails() : ""}
-        {isLastLeg ? this.renderLastWaypoint() : ""}
+        {
+          //isLastLeg ? this.renderLastWaypoint() : ""
+        }
       </div>
     );
   }
@@ -125,9 +129,9 @@ class PtLeg extends Leg {
     const { leg } = this.props;
     return (
       <div>
-        {leg.legDetails.map((detail, i) => {
-          if (detail.additional) {
-            return <StopOnLeg detail={detail} key={i} />;
+        {leg.turns.map((stop, i) => {
+          if (stop.name) {
+            return <StopOnLeg stop={stop} key={i} />;
           }
           return "";
         })}

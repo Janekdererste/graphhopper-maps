@@ -1,11 +1,3 @@
-.waypointTime {
-  color: rgb(65, 121, 0);
-}
-
-.waypointTimeDelayed {
-  color: rgb(249, 119, 119);
-}
-
 .legDescriptionDetails {
   display: flex;
   flex-direction: row;
