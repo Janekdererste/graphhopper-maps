@@ -45,6 +45,7 @@ export default class Path {
     this._validate(apiPath);
     this._initializeSimpleValues(apiPath);
     this._initializeLegsAndTransfers(apiPath);
+    this._isPossible = this._checkIfPossible();
   }
 
   _validate(apiPath) {
@@ -66,9 +67,9 @@ export default class Path {
 
     apiPath.legs.forEach((apiLeg, i) => {
       this.legs.push(this._initializeLeg(apiLeg));
-      if (i > 0)
+      if (i > 0) {
         this._waypoints.push(new Waypoint(apiPath.legs[i - 1], apiLeg));
-      else this._waypoints.push(new Waypoint(null, apiLeg));
+      } else this._waypoints.push(new Waypoint(null, apiLeg));
       if (i === apiPath.legs.length - 1)
         this.waypoints.push(new Waypoint(apiLeg, null));
     });
@@ -83,5 +84,13 @@ export default class Path {
       default:
         throw new Error("leg type: " + apiLeg.type + " not yet implemented");
     }
+  }
+
+  _checkIfPossible() {
+    let isPossible = true;
+    this._waypoints.forEach(waypoint => {
+      if (!waypoint.isPossible) isPossible = false;
+    });
+    return isPossible;
   }
 }

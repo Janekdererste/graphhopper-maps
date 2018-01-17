@@ -43,7 +43,14 @@ export default class Waypoint {
     this._type = WaypointType.INBEETWEEN;
     this._isPossible = true;
     this._initialize(prevApiLeg, nextApiLeg);
+    this._arrivalDelay = this._randomDelay();
+    this._departureDelay = this._randomDelay();
     this._checkIfPossible(prevApiLeg, nextApiLeg);
+  }
+
+  _randomDelay() {
+    let delay = (Math.random() - 0.5) * 100;
+    return Math.round(delay);
   }
 
   _initialize(prevApiLeg, nextApiLeg) {
@@ -118,10 +125,9 @@ export default class Waypoint {
       prevApiLeg.type === Mode.PT &&
       nextApiLeg.type === Mode.PT
     ) {
-      let arrivalTime =
-        prevApiLeg.stops[prevApiLeg.stops.length - 1].arrivalTime;
-      let departureTime = nextApiLeg.stops[0].departureTime;
-      let buffer = moment(departureTime).diff(moment(arrivalTime));
+      let buffer = moment(this.departureTime)
+        .add(this.departureDelay, "minutes")
+        .diff(moment(this.arrivalTime).add(this.arrivalDelay, "minutes"));
       this._isPossible = buffer >= 0;
     }
   }

@@ -131,7 +131,14 @@ class PtLeg extends Leg {
       <div>
         {leg.turns.map((stop, i) => {
           if (stop.name) {
-            return <StopOnLeg stop={stop} key={i} />;
+            return (
+              <StopOnLeg
+                name={stop.name}
+                time={moment(stop.departureTime).format("HH:mm")}
+                delay={stop.delay}
+                key={i}
+              />
+            );
           }
           return "";
         })}

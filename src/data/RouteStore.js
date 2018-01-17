@@ -40,8 +40,8 @@ export default class RouteStore extends Store {
   }
 
   _selectRoute(oldState, newSelectedRouteIndex) {
-    const oldSelectedPathIndex = oldState.selectedRouteIndex;
-    oldState.paths[oldSelectedPathIndex].isSelected = false;
+    if (oldState.selectedRouteIndex >= 0)
+      oldState.paths[oldState.selectedRouteIndex].isSelected = false;
     oldState.paths[newSelectedRouteIndex].isSelected = true;
     return Object.assign({}, oldState, {
       selectedRouteIndex: newSelectedRouteIndex
@@ -50,10 +50,12 @@ export default class RouteStore extends Store {
 
   _handleReceivedRoute(state, action) {
     const paths = this._parseResult(action.value);
+    const selectedPath = this._selectPathOnReceive(paths);
     return Object.assign({}, state, {
       paths: paths,
       isLastQuerySuccess: true,
-      isFetching: DataManager.isFetching()
+      isFetching: DataManager.isFetching(),
+      selectedRouteIndex: selectedPath
     });
   }
 
@@ -71,9 +73,18 @@ export default class RouteStore extends Store {
   }
 
   _createPaths(result) {
-    let paths = result.paths.map(path => new Path(path));
-    paths[this.getState().selectedRouteIndex].isSelected = true;
-    return paths;
+    return result.paths.map(path => new Path(path));
+  }
+
+  _selectPathOnReceive(paths) {
+    for (let i = 0; i < paths.length; i++) {
+      let path = paths[i];
+      if (path.isPossible) {
+        path.isSelected = true;
+        return i;
+      }
+    }
+    return -1;
   }
 }
 

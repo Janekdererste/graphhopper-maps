@@ -5,7 +5,7 @@ import { RouteActionType } from "../../data/RouteStore.js";
 import { LegMode } from "../../data/Leg.js";
 import { WaypointType } from "../../data/Waypoint.js";
 import { Leg, PtLeg, WalkLeg } from "./Leg.js";
-import { Waypoint, LegDescription, Transfer } from "./TripElement.js";
+import { Waypoint, Arrival, LegDescription } from "./TripElement.js";
 import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripDisplay.css";
 
@@ -59,6 +59,7 @@ const TripHeader = ({ trip }) => {
           {moment(trip.departureTime).format("HH:mm")} &ndash;{" "}
           {moment(trip.arrivalTime).format("HH:mm")}
         </span>
+
         <span>{getDuration(trip.departureTime, trip.arrivalTime)} min</span>
       </div>
       <SecondaryText>
@@ -78,17 +79,55 @@ const TripDetails = ({ trip }) => {
     }
   }
 
+  function getWaypointElement(waypoint) {
+    let arrivalElement = "";
+
+    if (
+      waypoint.type === WaypointType.INBEETWEEN &&
+      waypoint.prevMode === LegMode.PT
+    ) {
+      arrivalElement = (
+        <Arrival
+          time={moment(waypoint.arrivalTime).format("HH:mm")}
+          delay={waypoint.arrivalDelay}
+        />
+      );
+    }
+    return (
+      <div>
+        {arrivalElement}
+        <Waypoint
+          name={waypoint.name}
+          time={moment(waypoint.departureTime).format("HH:mm")}
+          delay={waypoint.departureDelay}
+        />
+      </div>
+    );
+  }
+
+  function getLastWaypointElement(waypoints) {
+    let last = waypoints[waypoints.length - 1];
+    return (
+      <Waypoint
+        time={moment(last.arrivalTime).format("HH:mm")}
+        delay={last.arrivalDelay}
+        name={last.name}
+        isLast={true}
+      />
+    );
+  }
+
   return (
     <div className={styles.tripDetails}>
       {trip.legs.map((leg, i) => {
         return (
           <div key={i}>
-            <Waypoint waypoint={trip.waypoints[i]} />
+            {getWaypointElement(trip.waypoints[i])}
             {getLeg(leg)}
           </div>
         );
       })}
-      <Waypoint waypoint={trip.waypoints[trip.waypoints.length - 1]} />
+      {getLastWaypointElement(trip.waypoints)}
     </div>
   );
 };

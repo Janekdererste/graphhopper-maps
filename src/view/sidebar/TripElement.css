@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 4rem;
+  width: 4.5rem;
   padding-right: 1rem;
 }
 
@@ -87,6 +87,9 @@
 
 .waypointName {
   font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .tripElementDecoration {
@@ -99,4 +102,12 @@
 
 .delay {
   color: rgb(249, 119, 119);
+}
+
+.negativeDelay {
+  color: green;
+}
+
+.arrivalTime {
+  font-size: 0.8rem;
 }
