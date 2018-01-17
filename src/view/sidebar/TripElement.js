@@ -6,14 +6,17 @@ import { LegMode } from "../../data/Leg.js";
 import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripElement.css";
 
-const Waypoint = ({ name, time, delay, isLast = false }) => {
+const Waypoint = ({ name, time, delay, isPossible, isLast = false }) => {
+  const waypointNameClassName = isPossible
+    ? styles.waypointName
+    : styles.waypointNameImpossible;
   return (
     <TripElement
       decorationType={TripElementDecorationType.WAYPOINT}
       isLastElement={isLast}
     >
       <TimeWithDelay time={time} delay={delay} />
-      <div className={styles.waypointName}>
+      <div className={waypointNameClassName}>
         <span>{name}</span>
       </div>
     </TripElement>

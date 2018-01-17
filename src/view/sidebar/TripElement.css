@@ -92,6 +92,11 @@
   align-items: center;
 }
 
+.waypointNameImpossible {
+  composes: waypointName;
+  text-decoration: line-through;
+}
+
 .tripElementDecoration {
   display: flex;
   flex-direction: column;

@@ -52,9 +52,12 @@ const Trip = ({ trip, selectedIndex, index }) => {
 };
 
 const TripHeader = ({ trip }) => {
+  const tripTimeClassName = trip.isPossible
+    ? styles.tripTime
+    : styles.tripTimeImpossible;
   return (
     <div className={styles.tripHeader}>
-      <div className={styles.tripTime}>
+      <div className={tripTimeClassName}>
         <span>
           {moment(trip.departureTime).format("HH:mm")} &ndash;{" "}
           {moment(trip.arrivalTime).format("HH:mm")}
@@ -100,6 +103,7 @@ const TripDetails = ({ trip }) => {
           name={waypoint.name}
           time={moment(waypoint.departureTime).format("HH:mm")}
           delay={waypoint.departureDelay}
+          isPossible={waypoint.isPossible}
         />
       </div>
     );
