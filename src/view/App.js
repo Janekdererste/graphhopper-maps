@@ -4,6 +4,8 @@ import Map from "./map/Map.js";
 import Addressbar from "./addressbar/Addressbar.js";
 import PathStore, { RouteActionType } from "../data/RouteStore.js";
 import SearchStore from "../data/SearchStore.js";
+import DataManager from "../data/DataManager.js";
+import { CreateQuery } from "../data/Query.js";
 import Dispatcher from "../data/Dispatcher.js";
 
 import styles from "./App.css";
@@ -26,7 +28,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Dispatcher.dispatch({ type: RouteActionType.REQUEST_PATH });
+    DataManager.queryRoute(CreateQuery(this.searchStore.getState()));
   }
 
   handleSearchStoreChanged() {

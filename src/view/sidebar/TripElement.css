@@ -4,10 +4,6 @@
   align-content: stretch;
 }
 
-.tripElement:last-child .tripElementLeftColumn {
-  margin-bottom: 1rem;
-}
-
 .tripElementLeftColumn {
   display: flex;
   flex-direction: column;
@@ -115,4 +111,8 @@
 
 .arrivalTime {
   font-size: 0.8rem;
+}
+
+.padding {
+  min-height: 1rem;
 }

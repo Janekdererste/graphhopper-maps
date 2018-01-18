@@ -1,6 +1,12 @@
 import React from "react";
 import moment from "moment";
-import { Waypoint, LegDescription, StopOnLeg, Turn } from "./TripElement.js";
+import {
+  Waypoint,
+  LegDescription,
+  StopOnLeg,
+  Turn,
+  Padding
+} from "./TripElement.js";
 import { LegMode } from "../../data/Leg.js";
 import IconPt from "../img/bus.png";
 import IconWalk from "../img/foot.png";
@@ -28,27 +34,6 @@ class Leg extends React.Component {
     this.setState({ isCollapsed: !this.state.isCollapsed });
   }
 
-  renderFirstWaypoint() {
-    const { leg } = this.props;
-    return (
-      <Waypoint
-        time={moment(leg.departureTime).format("HH:mm")}
-        name={leg.departureLocation}
-      />
-    );
-  }
-
-  renderLastWaypoint() {
-    const { leg } = this.props;
-    return (
-      <Waypoint
-        time={moment(leg.arrivalTime).format("HH:mm")}
-        name={leg.arrivalLocation}
-        isLastLeg={true}
-      />
-    );
-  }
-
   renderLegDetails() {
     const { leg } = this.props;
     return (
@@ -56,6 +41,7 @@ class Leg extends React.Component {
         {leg.turns.map((turn, i) => {
           return <Turn sign={turn.sign} text={turn.description} key={i} />;
         })}
+        <Padding />
       </div>
     );
   }
@@ -68,9 +54,6 @@ class Leg extends React.Component {
     const { leg, onClick, isLastLeg } = this.props;
     return (
       <div>
-        {
-          //this.renderFirstWaypoint()}
-        }
         <LegDescription
           icon={this.getLegIcon()}
           onClick={() => this._handleLegDescriptionClicked()}
@@ -92,9 +75,6 @@ class Leg extends React.Component {
           </div>
         </LegDescription>
         {!this.state.isCollapsed ? this.renderLegDetails() : ""}
-        {
-          //isLastLeg ? this.renderLastWaypoint() : ""
-        }
       </div>
     );
   }
@@ -103,26 +83,6 @@ class Leg extends React.Component {
 class PtLeg extends Leg {
   constructor(props) {
     super(props);
-  }
-
-  renderFirstWaypoint() {
-    const { leg } = this.props;
-    let time, className;
-
-    if (leg.isDelayed) {
-      className = styles.waypointTimeDelayed;
-      time = leg.departureTime;
-    } else {
-      className = styles.waypointTime;
-      time = leg.arrivalTime;
-    }
-    return (
-      <Waypoint
-        time={moment(time).format("HH:mm")}
-        timeClassName={className}
-        name={leg.departureLocation}
-      />
-    );
   }
 
   renderLegDetails() {
@@ -142,6 +102,7 @@ class PtLeg extends Leg {
           }
           return "";
         })}
+        <Padding />
       </div>
     );
   }

@@ -1,5 +1,4 @@
 import DataManager, { DataManagerActionType } from "./DataManager.js";
-import { CreateQuery } from "./Query.js";
 import Path from "./Path.js";
 import Store from "./Store.js";
 
@@ -69,7 +68,9 @@ export default class RouteStore extends Store {
   _parseResult(text) {
     let result = JSON.parse(text);
     console.log(result);
-    return this._createPaths(result);
+    const paths = this._createPaths(result);
+    console.log(paths);
+    return paths;
   }
 
   _createPaths(result) {

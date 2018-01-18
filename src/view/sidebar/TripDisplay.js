@@ -63,10 +63,10 @@ const TripHeader = ({ trip }) => {
           {moment(trip.arrivalTime).format("HH:mm")}
         </span>
 
-        <span>{getDuration(trip.departureTime, trip.arrivalTime)} min</span>
+        <span>{trip.durationInMinutes} min</span>
       </div>
       <SecondaryText>
-        Transfers: {trip.waypoints.length - 2} &ndash; {trip.fare}{" "}
+        Transfers: {trip.transfers} &ndash; {trip.fare}{" "}
       </SecondaryText>
     </div>
   );
@@ -135,7 +135,3 @@ const TripDetails = ({ trip }) => {
     </div>
   );
 };
-
-function getDuration(arrival, departure) {
-  return moment(departure).diff(moment(arrival), "minutes");
-}

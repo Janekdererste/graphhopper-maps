@@ -130,7 +130,8 @@ export default class LeafletAdapter {
     const features = [];
     legs.forEach(leg => {
       features.push(this._createFeatureFromGeometry(leg.type, leg.geometry));
-      if (leg.type === "pt") {
+
+      if (leg.type === "pt" && leg.turns.length && leg.turns.length > 0) {
         features.push(
           this._createFeatureFromGeometry(leg.type, leg.turns[0].geometry)
         );
@@ -147,7 +148,6 @@ export default class LeafletAdapter {
       features: features
     };
   }
-
   _createFeatureFromGeometry(type, geometry) {
     return {
       type: "Feature",
@@ -162,8 +162,6 @@ export default class LeafletAdapter {
     let style = this._getUnselectedStyle(feature);
     switch (feature.properties.type) {
       case "walk":
-        style.color = "#01afaa";
-        break;
       case "pt":
         style.color = "#015eaf";
         break;

@@ -6,7 +6,7 @@ import { LegMode } from "../../data/Leg.js";
 import SecondaryText from "../components/SecondaryText.js";
 import styles from "./TripElement.css";
 
-const Waypoint = ({ name, time, delay, isPossible, isLast = false }) => {
+const Waypoint = ({ name, time, delay, isPossible = true, isLast = false }) => {
   const waypointNameClassName = isPossible
     ? styles.waypointName
     : styles.waypointNameImpossible;
@@ -56,10 +56,7 @@ const TimeWithDelay = ({ time, delay }) => {
 
 const Turn = ({ sign, text }) => {
   return (
-    <TripElement
-      isLastElement={false}
-      decorationType={TripElementDecorationType.NONE}
-    >
+    <TripElement decorationType={TripElementDecorationType.NONE}>
       <span />
       <span>{text}</span>
     </TripElement>
@@ -68,10 +65,7 @@ const Turn = ({ sign, text }) => {
 
 const LegDescription = ({ icon, onClick, children }) => {
   return (
-    <TripElement
-      isLastElement={false}
-      decorationType={TripElementDecorationType.NONE}
-    >
+    <TripElement decorationType={TripElementDecorationType.NONE}>
       <img src={icon} className={styles.legDescriptionIcon} />
       <div className={styles.legRowDescription}>
         <button
@@ -100,12 +94,18 @@ const StopOnLeg = ({ name, time, delay }) => {
   }
 
   return (
-    <TripElement
-      isLastElement={false}
-      decorationType={TripElementDecorationType.STOP_ON_LEG}
-    >
+    <TripElement decorationType={TripElementDecorationType.STOP_ON_LEG}>
       <TimeWithDelay time={time} delay={delay} />
       <span>{name}</span>
+    </TripElement>
+  );
+};
+
+const Padding = () => {
+  return (
+    <TripElement decorationType={TripElementDecorationType.NONE}>
+      <span className={styles.padding} />
+      <span />
     </TripElement>
   );
 };
@@ -162,4 +162,4 @@ const TripElementDecorationType = {
   NONE: 2
 };
 
-export { Waypoint, Arrival, LegDescription, StopOnLeg, Turn };
+export { Waypoint, Arrival, LegDescription, StopOnLeg, Turn, Padding };

@@ -30,6 +30,10 @@ export default class Waypoint {
     return this._name;
   }
 
+  get geometry() {
+    return this._geometry;
+  }
+
   get isPossible() {
     return this._isPossible;
   }
@@ -54,10 +58,11 @@ export default class Waypoint {
   }
 
   _initialize(prevApiLeg, nextApiLeg) {
+    this._initializeName(prevApiLeg, nextApiLeg);
     if (nextApiLeg) {
       this._nextMode = nextApiLeg.type;
       this._initializeDepartureTime(nextApiLeg);
-      this._initializeName(nextApiLeg, false);
+      //this._initializeName(nextApiLeg, false);
     } else {
       this._type = WaypointType.LAST;
     }
@@ -94,28 +99,40 @@ export default class Waypoint {
     }
   }
 
-  _initializeName(apiLeg, isArrival) {
-    if (apiLeg.type === Mode.PT) {
-      this._name = apiLeg.departureLocation;
-    } else {
-      this._initializeWalkLocation(apiLeg, isArrival);
+  _initializeName(prevApiLeg, nextApiLeg) {
+    if (nextApiLeg) {
+      if (nextApiLeg.type === Mode.PT) {
+        this._name = nextApiLeg.departureLocation;
+      } else if (prevApiLeg) {
+        this._name = this._findArrivalLocation(prevApiLeg);
+      } else {
+        this._name = this._findWalkLocation(nextApiLeg, false);
+      }
+    } else if (prevApiLeg) {
+      this._name = this._findWalkLocation(prevApiLeg, true);
     }
   }
 
-  _initializeWalkLocation(apiLeg, isArrival) {
+  _findArrivalLocation(apiLeg) {
+    return apiLeg.stops[apiLeg.stops.length - 1].stop_name;
+  }
+
+  _findWalkLocation(apiLeg, isArrival) {
     let instructionIndex = 0;
     let coordIndex = 0;
+    let result = "";
 
-    if (!isArrival) {
+    if (isArrival) {
       instructionIndex = apiLeg.instructions.length - 1;
       coordIndex = apiLeg.geometry.coordinates.length - 1;
     }
     if (apiLeg.instructions[instructionIndex].street_name != "")
-      this._name = apiLeg.instructions[instructionIndex].street_name;
+      result = apiLeg.instructions[instructionIndex].street_name;
     else {
       const coord = apiLeg.geometry.coordinates[coordIndex];
-      this._name = coord[0] + ", " + coord[1];
+      result = coord[0] + ", " + coord[1];
     }
+    return result;
   }
 
   _checkIfPossible(prevApiLeg, nextApiLeg) {

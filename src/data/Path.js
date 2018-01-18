@@ -23,16 +23,21 @@ export default class Path {
   }
 
   get durationInMinutes() {
-    return moment(this._arrivalTime).diff(this._departureTime);
+    return moment(this._arrivalTime).diff(this._departureTime, "minutes");
   }
 
   get fare() {
     return this._fare;
   }
 
+  get transfers() {
+    return this._waypoints.length - 4;
+  }
+
   get isSelected() {
     return this._isSelected;
   }
+
   set isSelected(value) {
     this._isSelected = value;
   }
