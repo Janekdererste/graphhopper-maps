@@ -89,7 +89,7 @@ export default class SearchStore extends Store {
 
   _reduceDepartureDate(state, date) {
     let result = state;
-    let departure = moment.utc(date, "YYYY-MM-DD");
+    let departure = moment(date, "YYYY-MM-DD");
 
     if (departure.isValid()) {
       departure.hour(state.departureDateTime.hour());

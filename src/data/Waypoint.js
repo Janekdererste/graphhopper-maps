@@ -47,8 +47,6 @@ export default class Waypoint {
     this._type = WaypointType.INBEETWEEN;
     this._isPossible = true;
     this._initialize(prevApiLeg, nextApiLeg);
-    this._arrivalDelay = this._randomDelay();
-    this._departureDelay = this._randomDelay();
     this._checkIfPossible(prevApiLeg, nextApiLeg);
   }
 
@@ -59,44 +57,11 @@ export default class Waypoint {
 
   _initialize(prevApiLeg, nextApiLeg) {
     this._initializeName(prevApiLeg, nextApiLeg);
-    if (nextApiLeg) {
-      this._nextMode = nextApiLeg.type;
-      this._initializeDepartureTime(nextApiLeg);
-      //this._initializeName(nextApiLeg, false);
-    } else {
-      this._type = WaypointType.LAST;
-    }
-    if (prevApiLeg) {
-      this._prevMode = prevApiLeg.type;
-      this._initializeArrivalTime(prevApiLeg);
-    } else {
-      this._type = WaypointType.FIRST;
-    }
-  }
-
-  _initializeArrivalTime(apiLeg) {
-    if (apiLeg.type === Mode.PT) {
-      let lastStop = apiLeg.stops[apiLeg.stops.length - 1];
-      this._arrivalTime = lastStop.plannedArrivalTime;
-      this._arrivalDelay = this._calculateDelay(
-        lastStop.arrivalTime,
-        this._arrivalTime
-      );
-    } else {
-      this._arrivalTime = apiLeg.arrivalTime;
-    }
-  }
-
-  _initializeDepartureTime(apiLeg) {
-    if (apiLeg.type === Mode.PT) {
-      this._departureTime = apiLeg.stops[0].plannedDepartureTime;
-      this._departureDelay = this._calculateDelay(
-        apiLeg.stops[0].departureTime,
-        this._departureTime
-      );
-    } else {
-      this._departureTime = apiLeg.departureTime;
-    }
+    this._initializeMode(prevApiLeg, nextApiLeg);
+    this._initializeDepartureTime(nextApiLeg);
+    this._initializeWaypointType(prevApiLeg, nextApiLeg);
+    this._initializeArrivalTime(prevApiLeg);
+    this._initializeGeometry(prevApiLeg, nextApiLeg, this._type);
   }
 
   _initializeName(prevApiLeg, nextApiLeg) {
@@ -111,6 +76,60 @@ export default class Waypoint {
     } else if (prevApiLeg) {
       this._name = this._findWalkLocation(prevApiLeg, true);
     }
+  }
+
+  _initializeMode(prevApiLeg, nextApiLeg) {
+    if (prevApiLeg) this._prevMode = prevApiLeg.type;
+    if (nextApiLeg) this._nextMode = nextApiLeg.type;
+  }
+
+  _initializeWaypointType(prevApiLeg, nextApiLeg) {
+    this._type = WaypointType.INBEETWEEN;
+    if (!prevApiLeg) {
+      this._type = WaypointType.FIRST;
+    }
+    if (!nextApiLeg) {
+      this._type = WaypointType.LAST;
+    }
+  }
+
+  _initializeArrivalTime(apiLeg) {
+    if (!apiLeg) return;
+    if (apiLeg.type === Mode.PT) {
+      let lastStop = apiLeg.stops[apiLeg.stops.length - 1];
+      this._arrivalTime = lastStop.plannedArrivalTime;
+      this._arrivalDelay = this._calculateDelay(
+        lastStop.arrivalTime,
+        this._arrivalTime
+      );
+    } else {
+      this._arrivalTime = apiLeg.arrivalTime;
+    }
+  }
+
+  _initializeDepartureTime(apiLeg) {
+    if (!apiLeg) return;
+    if (apiLeg.type === Mode.PT) {
+      this._departureTime = apiLeg.stops[0].plannedDepartureTime;
+      this._departureDelay = this._calculateDelay(
+        apiLeg.stops[0].departureTime,
+        this._departureTime
+      );
+    } else {
+      this._departureTime = apiLeg.departureTime;
+    }
+  }
+
+  _initializeGeometry(prevApiLeg, nextApiLeg, waypointType) {
+    let result = "";
+    if (waypointType === WaypointType.INBEETWEEN) {
+      if (nextApiLeg.type === Mode.PT) {
+        result = nextApiLeg.stops[0].geometry;
+      } else if (prevApiLeg) {
+        result = prevApiLeg.stops[prevApiLeg.stops.length - 1].geometry;
+      }
+    }
+    this._geometry = result;
   }
 
   _findArrivalLocation(apiLeg) {

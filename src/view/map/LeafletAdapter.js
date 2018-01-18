@@ -1,6 +1,7 @@
 import Leaflet, { latLng } from "leaflet";
 import Dispatcher from "../../data/Dispatcher.js";
 import circleIcon from "./circle.png";
+import { WaypointType } from "../../data/Waypoint";
 
 export default class LeafletAdapter {
   constructor(mapDOMElement) {
@@ -108,9 +109,10 @@ export default class LeafletAdapter {
   setNewPaths(paths, selectedRouteIndex) {
     this.clearPaths();
 
-    let featureCollections = paths.map((path, i) =>
-      this._legsToFeatureCollection(path.legs, i)
+    let featureCollections = paths.map(path =>
+      this._createFeatureCollection(path)
     );
+
     featureCollections.forEach((collection, i) => {
       if (i === selectedRouteIndex) {
         this.selectedLayer.addData(collection);
@@ -126,21 +128,19 @@ export default class LeafletAdapter {
     this.selectedLayer.clearLayers();
   }
 
-  _legsToFeatureCollection(legs, pathIndex) {
+  _createFeatureCollection(path) {
     const features = [];
-    legs.forEach(leg => {
-      features.push(this._createFeatureFromGeometry(leg.type, leg.geometry));
-
-      if (leg.type === "pt" && leg.turns.length && leg.turns.length > 0) {
-        features.push(
-          this._createFeatureFromGeometry(leg.type, leg.turns[0].geometry)
+    path.legs.forEach(leg => {
+      let feature = this._createFeatureFromGeometry(leg.type, leg.geometry);
+      features.push(feature);
+    });
+    path.waypoints.forEach(waypoint => {
+      if (waypoint.type === WaypointType.INBEETWEEN) {
+        let feature = this._createFeatureFromGeometry(
+          "waypoint",
+          waypoint.geometry
         );
-        features.push(
-          this._createFeatureFromGeometry(
-            leg.type,
-            leg.turns[leg.turns.length - 1].geometry
-          )
-        );
+        features.push(feature);
       }
     });
     return {
@@ -148,6 +148,7 @@ export default class LeafletAdapter {
       features: features
     };
   }
+
   _createFeatureFromGeometry(type, geometry) {
     return {
       type: "Feature",

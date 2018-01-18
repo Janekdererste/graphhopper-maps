@@ -10,18 +10,6 @@ export default class PtLeg extends Leg {
 
   constructor(apiLeg) {
     super(apiLeg, LegMode.PT);
-
-    //create a delayed leg from time to time
-    const rand = Math.random();
-    if (rand < 0.3) {
-      this._turns.forEach(turn => {
-        turn.delay = 5;
-      });
-    } else if (0.7 >= rand >= 0.3) {
-      this._turns.forEach(turn => {
-        turn.delay = -5;
-      });
-    }
   }
 
   initializeTurns(apiLeg) {
@@ -58,18 +46,6 @@ export default class PtLeg extends Leg {
     let plannedTime = moment(planned);
     let diff = actualTime.diff(plannedTime, "minutes");
     return diff;
-  }
-
-  _findLocation(apiLeg, isArrival) {
-    let stopIndex = 0;
-    if (!isArrival) stopIndex = apiLeg.stops.length - 1;
-
-    if (apiLeg.stops[stopIndex].stop_name != "") {
-      return apiLeg.stops[stopIndex].stop_name;
-    } else {
-      const coord = apiLeg.stops[stopIndex].geometry.coordinates;
-      return coord[0] + ", " + coord[1];
-    }
   }
 
   _getDepartureTime(apiStop) {
