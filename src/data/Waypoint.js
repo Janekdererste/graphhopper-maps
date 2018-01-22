@@ -169,7 +169,7 @@ export default class Waypoint {
   }
 
   _calculateDelay(actual, planned) {
-    return moment(planned).diff(moment(actual), "minutes");
+    return moment(actual).diff(moment(planned), "minutes");
   }
 }
 
