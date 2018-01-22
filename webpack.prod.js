@@ -8,7 +8,11 @@ module.exports = function(env) {
       new webpack.optimize.UglifyJsPlugin({
         beautify: false,
         comments: false,
-        sourceMap: false
+        sourceMap: false,
+        drop_console: true
+      }),
+      new webpack.DefinePlugin({
+        "process.env.NODE_ENV": JSON.stringify("production")
       })
     ]
   });
