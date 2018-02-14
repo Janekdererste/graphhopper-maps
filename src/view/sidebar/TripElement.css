@@ -53,6 +53,18 @@
   top: 7px;
 }
 
+.waypointName {
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.waypointNameImpossible {
+  composes: waypointName;
+  text-decoration: line-through;
+}
+
 .waypointCircle {
   border-radius: 50%;
   background-color: white;
@@ -73,23 +85,7 @@
   position: relative;
 }
 
-.stopOnLegTime {
-  color: rgb(65, 121, 0);
-}
-
-.stopOnLegDelayedTime {
-  color: rgb(249, 119, 119);
-}
-
-.waypointName {
-  font-weight: bold;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.waypointNameImpossible {
-  composes: waypointName;
+.stopOnLegImpossible {
   text-decoration: line-through;
 }
 

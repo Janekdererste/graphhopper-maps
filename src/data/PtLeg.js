@@ -25,6 +25,7 @@ export default class PtLeg extends Leg {
           apiStop.departureTime,
           apiStop.plannedDepartureTime
         ),
+        isCancelled: apiStop.arrivalCancelled || apiStop.departureCancelled,
         geometry: apiStop.geometry
       };
       result.push(stop);

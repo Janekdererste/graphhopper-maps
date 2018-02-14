@@ -93,10 +93,14 @@ const StopOnLeg = ({ name, time, delay }) => {
     );
   }
 
+  function getClassName(stop) {
+    return stop.isCancelled ? styles.stopOnLegImpossible : "";
+  }
+
   return (
     <TripElement decorationType={TripElementDecorationType.STOP_ON_LEG}>
       <TimeWithDelay time={time} delay={delay} />
-      <span>{name}</span>
+      <span className={getClassName(stop)}>{name}</span>
     </TripElement>
   );
 };

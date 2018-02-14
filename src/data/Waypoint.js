@@ -102,6 +102,7 @@ export default class Waypoint {
         lastStop.arrivalTime,
         this._arrivalTime
       );
+      this._isArrivalCancelled = lastStop.arrivalCancelled;
     } else {
       this._arrivalTime = apiLeg.arrivalTime;
     }
@@ -110,11 +111,13 @@ export default class Waypoint {
   _initializeDepartureTime(apiLeg) {
     if (!apiLeg) return;
     if (apiLeg.type === Mode.PT) {
-      this._departureTime = apiLeg.stops[0].plannedDepartureTime;
+      let firstStop = apiLeg.stops[0];
+      this._departureTime = firstStop.plannedDepartureTime;
       this._departureDelay = this._calculateDelay(
-        apiLeg.stops[0].departureTime,
+        firstStop.departureTime,
         this._departureTime
       );
+      this._isDepartureCancelled = firstStop.departureCancelled;
     } else {
       this._departureTime = apiLeg.departureTime;
     }
@@ -155,7 +158,12 @@ export default class Waypoint {
   }
 
   _checkIfPossible(prevApiLeg, nextApiLeg) {
+    if (this._isArrivalCancelled || this._isDepartureCancelled) {
+      this._isPossible = false;
+    }
+
     if (
+      this._isPossible &&
       prevApiLeg &&
       nextApiLeg &&
       prevApiLeg.type === Mode.PT &&
