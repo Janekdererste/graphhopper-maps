@@ -24,11 +24,13 @@ class DataManager {
 
   queryEndpointInfo(query) {
     const url = endpoint + query;
-    this.query(
-      url,
-      DataManagerActionType.RECEIVED_INFO,
-      DataManagerActionType.INFO_QUERY_ERROR
-    );
+    Http.makeGETRequest(url, "info", (id, info) => Dispatcher.dispatch({
+      type: DataManagerActionType.RECEIVED_INFO,
+      value: info
+    }), (id, error) => Dispatcher.dispatch({
+      type: DataManagerActionType.INFO_QUERY_ERROR,
+      value: error.message
+    }));
   }
 
   query(url, successActionType, errorActionType) {
