@@ -11,23 +11,23 @@ export default class Http {
     return request.status === Http.STATUS_OK();
   }
 
-  static makeGETRequest(url, success, error) {
+  static makeGETRequest(url, reqId, success, error) {
     let request = new XMLHttpRequest();
     request.onreadystatechange = () =>
-      this.readyStateChangedHandler(request, success, error);
+      this.readyStateChangedHandler(request, reqId, success, error);
     request.open("GET", url);
     request.responseType = "text";
     request.send(null);
   }
 
-  static readyStateChangedHandler(request, success, error) {
+  static readyStateChangedHandler(request, reqId, success, error) {
     if (Http.isRequestDone(request)) {
       if (Http.isStatusSuccess(request)) {
-        success(request.response);
+        success(reqId, request.response);
       } else {
         console.log("Error in Webrequest. Code: " + request.status);
         if (error) {
-          error({ message: "error in web request", status: request.status });
+          error(reqId, { message: "error in web request", status: request.status });
         }
       }
     }

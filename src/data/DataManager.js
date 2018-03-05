@@ -9,7 +9,7 @@ class DataManager {
   }
 
   isFetching() {
-    return this._requestCount > 0;
+    return this._isFetching;
   }
 
   queryRoute(query) {
@@ -34,22 +34,28 @@ class DataManager {
   query(url, successActionType, errorActionType) {
     console.log(url);
     this._requestCount++;
+    this._isFetching = true;
     Dispatcher.dispatch({ type: DataManagerActionType.QUERY_DATA });
     Http.makeGETRequest(
       url,
-      text => {
-        this._requestCount--;
-        Dispatcher.dispatch({
-          type: successActionType,
-          value: text
-        });
+      this._requestCount,
+      (reqId, text) => {
+        if (reqId === this._requestCount) {
+          this._isFetching = false;
+          Dispatcher.dispatch({
+            type: successActionType,
+            value: text
+          });
+        }
       },
-      error => {
-        this._requestCount--;
-        Dispatcher.dispatch({
-          type: errorActionType,
-          value: error.message
-        });
+      (reqId, error) => {
+        if (reqId === this._requestCount) {
+          this._isFetching = false;
+          Dispatcher.dispatch({
+            type: errorActionType,
+            value: error.message
+          });
+        }
       }
     );
   }

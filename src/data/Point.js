@@ -22,7 +22,10 @@ export default class Point {
 
   static createFromString(coord) {
     let split = coord.split(",");
-    let map = split.map(value => Number.parseFloat(value));
+    let map = split.map(value => {
+      let number = Number.parseFloat(value);
+      return Number.isNaN(number) ? 0 : number;
+    });
     return Point.createFromArray(map);
   }
 

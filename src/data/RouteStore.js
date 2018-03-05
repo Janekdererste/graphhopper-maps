@@ -69,7 +69,6 @@ export default class RouteStore extends Store {
     let result = JSON.parse(text);
     console.log(result);
     const paths = this._createPaths(result);
-    console.log(paths);
     return paths;
   }
 
