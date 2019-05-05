@@ -5,7 +5,10 @@ import { WaypointType } from "../../data/Waypoint";
 
 export default class LeafletAdapter {
   constructor(mapDOMElement) {
-    this.map = Leaflet.map(mapDOMElement);
+    this.map = Leaflet.map(mapDOMElement, {
+      center: [51.505, -0.09],
+      zoom: 13
+    });
     this.map.zoomControl.setPosition("topright");
     this._markers = [];
     this._initializeMap();
@@ -17,6 +20,7 @@ export default class LeafletAdapter {
   }
 
   _initializeTileLayer() {
+    console.log("init tile layer");
     Leaflet.tileLayer(
       "https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=2ff19cdf28f249e2ba8e14bc6c083b39",
       {

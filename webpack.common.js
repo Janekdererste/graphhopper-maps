@@ -14,6 +14,7 @@ module.exports = {
   devtool: "source-map",
   devServer: {
     publicPath: "/",
+    port: 3000,
     contentBase: distPath,
     proxy: {
       "/route": {
@@ -83,8 +84,8 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        loader: 'svg-inline-loader'
-    }
+        loader: "svg-inline-loader"
+      }
     ]
   },
   plugins: [
